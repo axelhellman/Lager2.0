@@ -59,15 +59,15 @@ node * create_new_node(char* name, char* description, int price, char*shelf_name
   ware -> price = price; //ska det va punkt här istället för pil?
   
   list *list = (list*) calloc(1, sizeof(list));
-  assert(ware != NULL);
+  assert(list != NULL);
 
   ware -> list = list;
-
-  list -> first = shelf_node;
-  list -> last = shelf_node;
   
   shelf_node *shelf_node = (shelf_node) calloc(1, sizeof(shelf_node));
   assert(shelf_node != NULL);
+
+  list -> first = shelf_node;
+  list -> last = shelf_node;
   
   shelf_node -> shelf_name = shelf_name;
   shelf_node -> amount = amount;
@@ -90,15 +90,15 @@ tree* insert_node(tree *tree, node *insert_node)
   else
     {
       if (strcmp(insert_node_name, crnt_node_name) < 0)
-	{
-	  //insert på höger sida
-	}
+  {
+    //insert på höger sida
+  }
       else if (strcmp(insert_node_name, crnt_node_name) > 0)
-	{
-	  //insert på vänster sida
+  {
+    //insert på vänster sida
 
-	  else // strcmp(insert_node_name, crnt_node_name) == 0)
-	    //kaos!!
+    else // strcmp(insert_node_name, crnt_node_name) == 0)
+      //kaos!!
       //ta reda på var noden ska sättas in
       //sätt in noden
     }
@@ -107,7 +107,7 @@ tree* insert_node(tree *tree, node *insert_node)
 
 bool tree_is_empty(tree *tree)
 {
-  if (tree == NULL)
+  if (tree -> top_node == NULL)
     {
       return true;
     }
