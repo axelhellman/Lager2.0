@@ -246,7 +246,11 @@ char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num)
   return shelf_num;
 }
 
-
+void add_item_to_chart_IO()
+{
+  print_chart(); //not_implemented
+  char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [n]ext 20 items\n [e]xit", "cne")
+}
 
 void add_shelf_IO(warehouse *warehouse_list)
 {

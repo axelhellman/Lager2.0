@@ -11,8 +11,9 @@ void print_main_menu()
   puts("3. Edit an item");
   puts("4. Undo the last action");
   puts("5. List all items in the database");
+  puts("6. Add items to cart");
   puts("0. Exit program");
-  create_new_node("Katt", "svart", 900, "A23", 2);
+  //create_new_node("Katt", "svart", 900, "A23", 2);
 
 
 }
@@ -29,7 +30,7 @@ void main_menu()
       print_main_menu();
 
       int answer;
-      answer = ask_int_q("\nWhat would you like to do?", 0, 5);
+      answer = ask_int_q("\nWhat would you like to do?", 0, 6);
 
       switch (answer)
 	{
@@ -53,6 +54,11 @@ void main_menu()
 	  print_warehouse(warehouse_list);
 	  break;
 
+	case 6:
+	  puts("Fix menu for ADD A ITEM TO CART");
+	  //add_item_to_chart_IO();
+	  break;
+
 	case 0:
 	  {
 	    cont = exit_warehouse();
@@ -62,5 +68,5 @@ void main_menu()
 	}
     }
 
-  destroy_warehouse(warehouse_list);
+  destroy_tree(tree);
 }
