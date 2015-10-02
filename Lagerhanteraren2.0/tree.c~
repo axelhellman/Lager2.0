@@ -1,0 +1,75 @@
+
+typedef struct node_s node;
+typedef struct ware_s ware;
+typedef struct hyll_lista_s hyll_lista;
+struct node *root;
+  
+struct node_s
+{
+  ware *ware;
+  node *left_node;
+  node *right_node;
+  
+};
+
+struct ware_s
+{
+  char* name;
+  char* description;
+  int price;
+
+  hyll_lista *first_hylla;
+};
+
+struct hyll_lista_s
+{
+  char* hyllnamn;
+  int antal;
+  hyll_lista *nästa_hylla;
+};
+
+
+// TOBIAS KOD FRÅN FÖRELÄSNINGEN
+
+void tree_insert(tree_t *node, int value)
+{
+  if (t->root)
+    {
+      node_insert(t->root, value);
+    }
+  else
+    {
+      t->root = node_new(value, NULL, NULL);
+    }
+}
+
+void node_insert(node_t *node, int value)
+{
+  if (node->value == value)
+    {
+      // This not is already in the tree -- what to do? (application-specific)
+    }
+  else
+  if (node->value < value)
+    {
+      if (node->right)
+        {
+          node_insert(node->right, value);
+        }
+      else
+        {
+          node->right = node_new(value, NULL, NULL);
+        }
+    }
+  else
+    {
+      if (node->left)
+        {
+          node_insert(node->left, value);
+        }
+      else
+        {
+          node->left = node_new(value, NULL, NULL);
+        }
+    }
+}
