@@ -44,7 +44,7 @@ char * get_name(node *node)
 
 #DEFINE ARGS_WARE char* name, char* description, int price, char*shelf_name, int amount
 
-node * create_new_node(ARGS_WARE)
+node * create_new_node(ARGS_WARE) // TODO: void? 
 {
   node *node = (node*) calloc(1, sizeof(node));
   assert(node != NULL);
@@ -95,33 +95,45 @@ node* find_node(node* node, char* name)
   return NULL;
 }
 
-
-
-tree* insert_node(tree *tree, node *insert_node)
+void insert_or_update(tree* tree, WARE_ARGS)
 {
-  char *insert_node_name = get_name(insert_node);
-  node *crnt_node = tree;
-  char *crnt_node_name = get_name(crnt_node); 
-    if (tree_is_empty)
+  if (find_node(tree -> top_node, WARE_ARGS) == NULL)
     {
-      tree -> top_node = insert_node;
+      insert_new_node(tree, WARE_ARGS);
     }
-
-  else
+  else // find_node == node
     {
-      if (strcmp(insert_node_name, crnt_node_name) < 0)
-  {
-    //insert på höger sida
-  }
-      else if (strcmp(insert_node_name, crnt_node_name) > 0)
-  {
-    //insert på vänster sida
-
-    else // strcmp(insert_node_name, crnt_node_name) == 0)
-      //kaos!!
-      //ta reda på var noden ska sättas in
-      //sätt in noden
+      update_node;
     }
+}
+
+void update_node()
+{
+  puts"hej";
+}
+
+node * find_place_to_insert(tree* tree, char *name) // TODO: ta med trädet?
+{
+  
+  char* crnt_node_name = get_name(node);  
+  if (strcmp(name, crnt_node_name) > 0)
+    {
+      return find_node(node -> right_node, name);
+    }
+  else (strcmp(name, crnt_node_name) < 0)
+    {
+      return find_node( node -> left_node, name);
+    } 
+  
+}
+
+void insert_new_node(tree* tree, WARE_ARGS) //TODO ta med trädet?
+{
+  node* parent = find_place_to_insert(tree, name); //parent??
+  parent -> left_node = create_new_node(WARE_ARGS); //fel pekare
+  char* name = get_name(new_node);
+  
+  
 }
 
 
@@ -196,6 +208,19 @@ void node_insert(node_t *node, int value)
 }
 */
 
+ void tree_print(node *n) 
+ {
+   if(n)
+     {
+       tree_print (n->left_node);
+       printf("%s ", n->ware.name); //TODO kanske
+       tree_print (n->right_node);
+     }
+ }
+
+
+
+ 
  int main (void)
  {
    printf("Hej hej");
