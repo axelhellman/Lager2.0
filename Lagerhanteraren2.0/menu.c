@@ -15,7 +15,6 @@ void print_main_menu()
   puts("0. Exit program");
   //create_new_node("Katt", "svart", 900, "A23", 2);
 
-
 }
 
 void main_menu()
@@ -23,7 +22,7 @@ void main_menu()
 
   warehouse *warehouse_list = new_warehouse();
   
-  int cont = 1;
+  bool cont = true;
   
   while (cont)
     {

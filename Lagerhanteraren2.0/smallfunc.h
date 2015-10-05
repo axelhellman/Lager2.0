@@ -22,4 +22,6 @@ char ask_alt(char* question, char* alternatives);
 
 char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num);
 
+void print_line(void);
+
 #endif /* SMALLFUNC_H */

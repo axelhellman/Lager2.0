@@ -21,7 +21,7 @@ char ask_alt(char* question, char* alternatives);
 
 void add_item_to_chart_IO()
 {
-  // print_chart(); //not_implemented
+  // print_cart(); //not_implemented
   char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [n]ext 20 items\n [e]xit", "cne");
   printf("Your choice: %c", answer);
 }
@@ -42,7 +42,7 @@ void add_shelf_IO(warehouse *warehouse_list)
   shelf_num = fix_shelf_num(warehouse_list, shelf_num);
   num_items = ask_int_q("Number of items:", 1, 99999999);
 
-  puts("---------------------------------");
+  print_line();
 
   print_add_shelf(name, description, price, shelf_num, num_items);
 
@@ -95,8 +95,11 @@ void remove_shelf_IO(warehouse *warehouse_list)
       else if (ans == 'r')
 	{
 	  index = ask_index(warehouse_list, page);
-	  remove_shelf(warehouse_list, index);
-	  break;
+	  if (index =! 0)
+	    {
+	      remove_shelf(warehouse_list, index);
+	      break;
+	    }	  
 	}
       else
 	{
@@ -110,22 +113,20 @@ void remove_shelf_IO(warehouse *warehouse_list)
 
 void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf) 
 {
-  int cont = 1;
+  bool cont = true;
   
   char* name = get_name(choosed_shelf);
   char* description = get_description(choosed_shelf);
   int price = get_price(choosed_shelf);
   char* shelf_num = get_shelf_num(choosed_shelf);
   int num_items = get_num_items(choosed_shelf);
- 
   
-  while (cont)
+  while (cont_edit)
     {
-      edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_num, num_items); //flyttade hit
+      edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_num, num_items);
       puts("\n-----EDIT ITEM-------------");
       print_box_shelf_num(name, description, price, shelf_num, num_items);
-      int edit;
-      edit =  ask_int_q("What would you like to edit?", 1, 5);
+      int edit = ask_int_q("What would you like to edit?", 1, 5);
   
       switch (edit)
 	{
@@ -147,11 +148,11 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf)
 	  num_items = ask_int_q("\nNew num_items: ", 1, 99999999);} break;
 	default: puts("defaaaauultttt");
 	}
-      cont = ask_yn("Continue edit this item? y/n ");
+      cont_edit = ask_yn("Continue edit this item? y/n ");
         
     }
-  int ans = ask_yn("Save this ware? y/n");
-  if (ans == 1)
+  bool save_ware = ask_yn("Save this ware? y/n");
+  if (save_ware)
     {
       edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_num, num_items);
       puts("Item successfully updated");
@@ -166,7 +167,7 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf)
 
 void edit_shelf_IO(warehouse* warehouse_list)
 {
-  int continue_edit = 1;
+  bool continue_edit = true;
 
   if(warehouse_empty(warehouse_list))
     {
@@ -183,7 +184,7 @@ void edit_shelf_IO(warehouse* warehouse_list)
       printf("\n----- EDIT AN ITEM -----------" );
       printf("\nItems in warehouse:\n");
       shelf = print_20(warehouse_list, shelf);
-      puts("------------------------------");
+      print_line();
 
       while(true)
 	{
@@ -201,6 +202,7 @@ void edit_shelf_IO(warehouse* warehouse_list)
 	  if (answer == 'c')
 	    {
 	      index = ask_index(warehouse_list, page);
+	      if (index == 0) continue;
 	      shelf = get_shelf(warehouse_list, index);
 	      edit_shelf_IO_aux(warehouse_list, shelf);
 	      continue_edit = ask_yn("Edit another item? y/n");
@@ -226,7 +228,7 @@ void edit_shelf_IO(warehouse* warehouse_list)
   
 void undo_action_IO(warehouse* warehouse_list)
 {
-  int answer = ask_yn("Are you sure you would like to undo your last action? y/n");
+  bool answer = ask_yn("Are you sure you would like to undo your last action? y/n");
   if (answer)
     {
       undo_action(warehouse_list);
@@ -234,19 +236,11 @@ void undo_action_IO(warehouse* warehouse_list)
 }
 
 
-int exit_warehouse()
+bool exit_warehouse()
 {
-  char ans;
-  ans = ask_yn("Are you sure you would like to exit the warehouse? y/n");
+  bool ans = ask_yn("Are you sure you would like to exit the warehouse? y/n");
 
-  if (ans == 1) 
-    {
-      return 0; //exit
-    }
-  else
-    {
-      return 1; //stay in program
-    }
+  return ans;
 }
 
 
@@ -285,6 +279,7 @@ void print_warehouse(warehouse *warehouse_list)
       if (answer == 's')
 	{
 	  index = ask_index(warehouse_list, page);
+	  if (index == 0) break;
 	  tmp_shelf = get_shelf(warehouse_list, index);
 	  print_box_shelf2(tmp_shelf);
 	}
@@ -300,8 +295,14 @@ void print_warehouse(warehouse *warehouse_list)
 	}
     }
 }
-
-
+/*
+void print_cart(tree* tree, cart* cart)
+{
+  printf("This is your shopping cart");
+  print_line();
+  printf("shopping cart woho");
+  print_line();
+  } */
 
 shelf * print_20(struct warehouse *warehouse_list, struct shelf *shelf_start)
 {

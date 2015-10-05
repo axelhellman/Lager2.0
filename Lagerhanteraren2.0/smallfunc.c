@@ -22,7 +22,7 @@ int ask_index(warehouse* warehouse_list, int page)
       shelf = get_shelf(warehouse_list, index);
       while (shelf == NULL)
 	{
-	  answer = ask_int_q("Item doesn't exist, please choose another item", 1, 20);
+	  answer = ask_int_q("Item doesn't exist, please choose another item. Press 0 to exit.", 0, 20);
 	  index = page * 20 + answer - 1;
 	  shelf = get_shelf (warehouse_list, index);
 	}
@@ -97,16 +97,16 @@ int ask_int_q (char *question, int low, int high)
   return ok_ans;
 }
 
-int ask_yn(char* question)
+bool ask_yn(char* question)
 {
   char ans = ask_alt(question, "yn");
 
   if (ans == 'y')
     {
-      return 1;}
+      return true;}
   else
     {
-      return 0;}
+      return false;}
 }
 
 
@@ -256,6 +256,10 @@ bool only_digits(char* answer)
   return true;
 }
 
+void print_line(void)
+{
+  puts("--------------------------------------");
+}
 /* void lower_letter(char* answer, int i)
 {
   if (answer[i] == '\0')
