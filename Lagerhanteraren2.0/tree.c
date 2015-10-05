@@ -42,7 +42,9 @@ char * get_name(node *node)
   return (node.ware -> name);
 }
 
-node * create_new_node(char* name, char* description, int price, char*shelf_name, int amount)
+#DEFINE ARGS_WARE char* name, char* description, int price, char*shelf_name, int amount
+
+node * create_new_node(ARGS_WARE)
 {
   node *node = (node*) calloc(1, sizeof(node));
   assert(node != NULL);
