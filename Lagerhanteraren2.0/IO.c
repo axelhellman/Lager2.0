@@ -61,21 +61,35 @@ int ask_index(warehouse* warehouse_list, int page)
   return index;
 }
 
+void lower_letter(char* answer, int i)
+{
+  if (answer[i] == '\0')
+    {
+      return; 
+    }
+  else
+    {
+      answer[i] = tolower(answer[i]);
+      lower_letter(answer, i+1);
+    }
+}
 char* ask_str_q (char *question)
 {
-  char reply[256] = "\n";
-  while (reply[0] == '\n')
+  char input[256] = "\n";
+  while (input[0] == '\n')
     {
       printf("%s\n> ", question);
-      fgets(reply, sizeof(reply), stdin);
+      fgets(input, sizeof(input), stdin);
     }
-  char* answer = reply;
-  answer = strip (reply);
+  char* answer = strip (input);
   answer[0] = toupper(answer[0]);
-  for (int i = 1; i<strlen(answer); ++i)
+  lower_letter(answer, 1);
+  
+  /* for (int i = 1; i<strlen(answer); ++i)
     {
       answer[i]=tolower(answer[i]);
-    }
+    } */
+
   return answer;
 }
 
@@ -110,14 +124,14 @@ int ask_int_q (char *question, int low, int high)
   int ok_ans;
   while (true)
     {
-      char reply[128] = "\n";
-      while (reply[0] == '\n')
+      char input[128] = "\n";
+      while (input[0] == '\n')
 	{
 	  printf("%s\n> ", question);
-	  fgets(reply, sizeof(reply), stdin);
+	  fgets(input, sizeof(input), stdin);
 	}
       char* answer;
-      answer = strip (reply);
+      answer = strip (input);
    
       if (strcmp(answer, "0")==0)
 	{
@@ -248,8 +262,9 @@ char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num)
 
 void add_item_to_chart_IO()
 {
-  print_chart(); //not_implemented
-  char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [n]ext 20 items\n [e]xit", "cne")
+  // print_chart(); //not_implemented
+  char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [n]ext 20 items\n [e]xit", "cne");
+  printf("Your choice: %c", answer);
 }
 
 void add_shelf_IO(warehouse *warehouse_list)

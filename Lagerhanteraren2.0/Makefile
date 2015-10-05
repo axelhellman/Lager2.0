@@ -3,13 +3,14 @@ FLAGS= -Wall -std=c11 -ggdb
 
 all: warehouse
 
-warehouse: main.c menu.o IO.o database.o tree.o
-	$(CC) $(FLAGS) main.c menu.o IO.o database.o tree.o -o main
+warehouse: main.c menu.o IO.o database.o
+	$(CC) $(FLAGS) main.c menu.o IO.o database.o -o main
 
 menu.o: menu.c menu.h IO.o database.o
 	$(CC) $(FLAGS) menu.c -c
-tree.o: tree.c tree.h
-	$(CC) $(FLAGS) tree.c -c
+
+#tree.o: tree.c tree.h
+#	$(CC) $(FLAGS) tree.c -c
 
 IO.o: IO.c IO.h database.o
 	$(CC) $(FLAGS) IO.c -c

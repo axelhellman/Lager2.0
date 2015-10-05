@@ -359,16 +359,17 @@ void edit_shelf(warehouse* warehouse_list, shelf *shelf, char *name, char *descr
 
 // Jag har ingen aning om vad jag gör haha! Men försöker göra något som friar allt minne.
 // destroys the entire warehouse
-void destroy_tree(node *node_to_destroy)
+/*
+void destroy_tree(tree* tree, node *node_to_destroy)
 {
   node *tmp_node = NULL;
   node *left_node = node_to_destroy -> left_node;
   node *right_node = node_to_destroy  -> right_node;
 
 
-  while(node_to_destroy  != NULL)
+  while(node_to_destroy != NULL)
     {
-      tmp_node = node_to_destroy ;
+      tmp_node = node_to_destroy;
       free(tmp_node);
       destroy_tree(left_node);
       destroy_tree(right_ndoe);
@@ -378,7 +379,7 @@ void destroy_tree(node *node_to_destroy)
 
   free(tree);
 }
-
+*/
 
 
 // =======================

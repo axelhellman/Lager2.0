@@ -68,5 +68,5 @@ void main_menu()
 	}
     }
 
-  destroy_tree(tree);
+  //destroy_tree(tree);
 }

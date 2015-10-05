@@ -9,19 +9,19 @@ struct tree_s
 
 struct node_s
 {
-  ware *ware;
+  struct ware_s
+  {
+    char* name;
+    char* description;
+    int price;
+
+    list *shelf_list;
+  } ware;
+
   node *left_node;
   node *right_node; 
 };
 
-struct ware_s
-{
-  char* name;
-  char* description;
-  int price;
-
-  shelf_list *first_shelf;
-};
 
 struct list_s
 {
@@ -38,7 +38,7 @@ struct shelf_node_s
 
 char * get_name(node *node)
 {
-  return (node -> ware -> name);
+  return (node.ware -> name);
 }
 
 node * create_new_node(char* name, char* description, int price, char*shelf_name, int amount)
@@ -49,21 +49,16 @@ node * create_new_node(char* name, char* description, int price, char*shelf_name
   node -> left_node = NULL;
   node -> right_node = NULL;
   
-  ware *ware = (ware*) calloc(1, sizeof(ware));
-  assert(ware != NULL);
-
-  node -> ware = ware;
-  
-  ware -> name = name; // (*ware).name
-  ware -> description = description;
-  ware -> price = price; //ska det va punkt här istället för pil?
+  node -> ware.name = name; // (*ware).name
+  node -> ware.description = description;
+  node -> ware.price = price; //ska det va punkt här istället för pil?
   
   list *list = (list*) calloc(1, sizeof(list));
   assert(list != NULL);
 
-  ware -> list = list;
+  node -> ware.list = list;
   
-  shelf_node *shelf_node = (shelf_node) calloc(1, sizeof(shelf_node));
+  shelf_node *shelf_node = (shelf_node*) calloc(1, sizeof(shelf_node));
   assert(shelf_node != NULL);
 
   list -> first = shelf_node;
@@ -75,6 +70,27 @@ node * create_new_node(char* name, char* description, int price, char*shelf_name
   
   return node;
 }
+
+node* find_node(node* node, char* name)
+{
+  char* crnt_node_name = get_name(node);
+
+  if (strcmp(name, crnt_node_name) == 0)
+    {
+      return node;
+    }
+  else if (strcmp(name, crnt_node_name) > 0)
+    {
+      return find_node(node -> right_node, name);
+    }
+  else //(strcmp(name, crnt_node_name) < 0)
+    {
+      return find_node( node -> left_node, name);
+    }
+    
+  return NULL;
+}
+
 
 
 tree* insert_node(tree *tree, node *insert_node)
