@@ -19,16 +19,17 @@ char ask_alt(char* question, char* alternatives);
 
 char* strip (char* str)
 {
-  int len = strlen (str);
+  char* copy = strdup(str);
+  int len = strlen (copy);
   for (int i = 0; i<len; ++i)
     {
-      if (str[i] == '\n')
+      if (copy[i] == '\n')
 	{
-	  str[i] = '\0';
+	  copy[i] = '\0';
 	  break;
 	}
     } 
-  return strdup(str); //free??
+  return copy; //free??
 }
 
 void clear (void)
