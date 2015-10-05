@@ -15,11 +15,13 @@ menu.o: menu.c menu.h IO.o database.o
 IO.o: IO.c IO.h database.o
 	$(CC) $(FLAGS) IO.c -c
 
+smallfunc.o: smallfunc.c smallfunc.h database.h
+	$(CC) $(FLAGS) smallfunc.c -c
+
 database.o: database.c database.h
 	$(CC) $(FLAGS) database.c -c
 
-smallfunc.o: smallfunc.c smallfunc.h
-	$(CC) $(FLAGS) smallfunc.c -c
+
 
 run: warehouse #run är beroende av warehouse
 	echo "Running program, woho!"

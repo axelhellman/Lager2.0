@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "database.h"
+#include "smallfunc.h"
 
 #ifndef IO_H 
 #define IO_H
