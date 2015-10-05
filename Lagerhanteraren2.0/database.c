@@ -258,7 +258,9 @@ warehouse * new_warehouse()
 void create_new_shelf_aux(shelf *shelf, char *name, char *description, int price,
 		  char *shelf_num, int num_items)
 {
-  shelf -> item.name = name;
+  shelf -> item.name = calloc(strlen(name)+1, sizeof(char));
+  strcpy(shelf->item.name, name);
+  //shelf -> item.name = name;
   shelf -> item.description = description;
   shelf -> item.price = price;
   

@@ -81,7 +81,8 @@ char* ask_str_q (char *question)
       printf("%s\n> ", question);
       fgets(input, sizeof(input), stdin);
     }
-  char* answer = strip (input);
+  char* answer = strip(input);
+
   answer[0] = toupper(answer[0]);
   lower_letter(answer, 1);
   
@@ -130,8 +131,7 @@ int ask_int_q (char *question, int low, int high)
 	  printf("%s\n> ", question);
 	  fgets(input, sizeof(input), stdin);
 	}
-      char* answer;
-      answer = strip (input);
+      char* answer = strip (input);
    
       if (strcmp(answer, "0")==0)
 	{
@@ -243,6 +243,7 @@ char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num)
     {
       while (!(check_shelf_ans(shelf_num)))
 	{
+	  free(shelf_num);
 	  shelf_num = ask_str_q("Please answer on the format [A23], [A2], [B34]");
 	}
 
