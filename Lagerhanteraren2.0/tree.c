@@ -25,6 +25,7 @@ struct node_s
 
 struct list_s
 {
+  int total_amount;
   shelf_node *first;
   shelf_node *last;
 };
@@ -56,11 +57,12 @@ node * create_new_node(char* name, char* description, int price, char*shelf_name
   list *list = (list*) calloc(1, sizeof(list));
   assert(list != NULL);
 
+  total_amount = amount;
   node -> ware.list = list;
   
   shelf_node *shelf_node = (shelf_node*) calloc(1, sizeof(shelf_node));
   assert(shelf_node != NULL);
-
+  
   list -> first = shelf_node;
   list -> last = shelf_node;
   
