@@ -38,7 +38,6 @@ struct shelf_node_s
 };
 
 
-
 /*
 struct cart_s
 {
@@ -129,12 +128,37 @@ node* find_node(node* node, char* name)
       return find_node(node -> left_node, name);
     }
     
-  return NULL;
+  //return NULL;
 }
 
-void remove_node(node* node, char* name)
+void balance_tree(node* node)
+{ 
+  puts("lala");
+}
+
+
+void remove_node(node* node, char* name, list * list, shelf_node * shelf_node)
+ )
 {
-  puts("TODO");
+  node *temp = find_node(node, name);
+
+  if (temp == NULL) return temp;
+
+  
+  else if (temp == node)
+    {
+      
+      free(shelf_node);
+      free(list);
+      free(temp);
+	//Fall då det enbart finns en vara på en hyllplats
+    }
+
+  else
+    {
+      //Fall då det finns fler än en vara på olika hyllor
+    }
+  
 }
 
 
@@ -246,10 +270,9 @@ void print_tree(node *n)
    insert_or_update(tree, "Gurka", "Grön och skön", 12, "A23", 2);
    
  }
+
+
 */
-
-
-
 
 
 
