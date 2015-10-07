@@ -35,7 +35,10 @@ struct shelf_node_s
   char* shelf_name;
   int amount;
   shelf_node *next_shelf;
-}; 
+};
+
+
+
 /*
 struct cart_s
 {
@@ -129,6 +132,12 @@ node* find_node(node* node, char* name)
   return NULL;
 }
 
+void remove_node(node* node, char* name)
+{
+  puts("TODO");
+}
+
+
 bool node_exists(tree_root* tree, char* name)
 {
   if (find_node(tree -> top_node, name) != NULL) return true;
@@ -154,6 +163,7 @@ void insert_or_update(tree_root* tree, char* name, char* description, int price,
       return;
     }
 }
+
 
 void insert_new_node(tree_root * tree, char* name, char* description, int price, char* shelf_name, int amount) // TODO: ta med trädet?
 {
@@ -216,13 +226,14 @@ tree_root* create_new_tree()
 }
 
 
- void print_tree(node *n) 
- {
+void print_tree(node *n) 
+ { 
    if(n)
      {
        print_tree (n->left_node);
-       printf("%d %s\n", 100, n->ware.name); //TODO kanske
+       printf("-%s\n", n->ware.name); //TODO kanske
        print_tree (n->right_node);
+      
      }
  }
 
@@ -236,3 +247,12 @@ tree_root* create_new_tree()
    
  }
 */
+
+
+
+
+
+
+
+// remove node
+// 
