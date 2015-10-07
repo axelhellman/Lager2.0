@@ -2,19 +2,20 @@
 
 void print_add_shelf(char *name, char *description, int price, char *shelf_num, int num_items);
 
-void print_name(shelf *shelf);
-void print_description(shelf *shelf);	    
-void print_price(shelf *shelf);	  
-void print_shelf_num(shelf *shelf);	   
-void print_num_items (shelf *shelf);
+void print_name(node *node);
+void print_description(node *node);	    
+void print_price(node *node);	  
+void print_shelf_num(node *node);	   
+void print_num_items(node *node);
 
 void print_box_shelf(char *name, char *description, int price, char *shelf_num, int num_items);
-void print_box_shelf2(shelf* shelf);
+//void print_box_shelf2(shelf* shelf);
 void print_box_shelf_num(char *name, char *description, int price, char *shelf_num, int num_items);
+/*
 shelf * print_20(warehouse *warehouse_list, shelf *shelf_start);
 
 void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf);
-char ask_alt(char* question, char* alternatives);
+//char ask_alt(char* question, char* alternatives); */
 
 
 
@@ -26,7 +27,7 @@ void add_item_to_chart_IO()
   printf("Your choice: %c", answer);
 }
 
-void add_shelf_IO(warehouse *warehouse_list)
+void add_shelf_IO(tree_root *tree)
 {
   puts("\n----- ADD AN ITEM --------------------");
   char* name;
@@ -34,13 +35,25 @@ void add_shelf_IO(warehouse *warehouse_list)
   int price;
   char* shelf_num; 
   int num_items;
+  node* node;
   
-  name = ask_str_q("Name:");
-  description = ask_str_q("Description:");
-  price = ask_int_q("Price (kr):", 1, 99999999);
-  shelf_num = ask_str_q("Shelf number:");
-  shelf_num = fix_shelf_num(warehouse_list, shelf_num);
-  num_items = ask_int_q("Number of items:", 1, 99999999);
+  name = ask_name();
+  if (node_exists(tree -> top_node, name))
+    {
+      node = find_node(tree -> top_node, name);
+      printf("%s is already in the warehouse.", name);
+      description = get_description(node);
+      price = get_price(node);
+      print_description(node);
+      print_price(node);
+    }
+  else
+    {
+      description = ask_description();
+      price = ask_price();
+    }
+  shelf_num = ask_shelf_name();
+  num_items = ask_num_items();
 
   print_line();
 
@@ -49,7 +62,7 @@ void add_shelf_IO(warehouse *warehouse_list)
   char ans = ask_alt("[s]ave this item / [d]on't save / [e]dit", "sde");
   if  (ans == 's')
     {
-      add_shelf(warehouse_list, name, description, price, shelf_num, num_items);
+      insert_or_update(tree, name, description, price, shelf_num, num_items);
       printf("\n%s added to the warehouse!\n", name);
     }
   else if (ans == 'd')
@@ -58,20 +71,21 @@ void add_shelf_IO(warehouse *warehouse_list)
     }
   else
     {
-      add_shelf(warehouse_list, name, description, price, shelf_num, num_items);
-      edit_shelf_IO_aux(warehouse_list, get_last_shelf(warehouse_list));
+      insert_or_update(tree, name, description, price, shelf_num, num_items);
+      //edit_shelf_IO_aux(tree, name);
     }
 }
 
 
-void remove_shelf_IO(warehouse *warehouse_list)
+void remove_shelf_IO(tree_root *tree)
 {
-  if(warehouse_empty(warehouse_list))
+  if(tree_is_empty(tree))
     {
       printf("The warehouse is empty!\n");
-      return ;
+      return;
     }
-  
+  print_tree(tree -> top_node);
+  /*
   shelf* shelf = print_20(warehouse_list, NULL);
   char ans = 0;
   int index;
@@ -105,12 +119,12 @@ void remove_shelf_IO(warehouse *warehouse_list)
 	{
 	  break;
 	}
-    }
+	} */
   return;
 }
 
 
-
+/*
 void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf) 
 {
   bool cont = true;
@@ -235,7 +249,7 @@ void undo_action_IO(warehouse* warehouse_list)
     }
 }
 
-
+*/
 bool exit_warehouse()
 {
   bool ans = ask_yn("Are you sure you would like to exit the warehouse? y/n");
@@ -245,7 +259,7 @@ bool exit_warehouse()
 
 
 // PRINT FUNCTIONS -----------------------------------
-
+/*
 void print_warehouse(warehouse *warehouse_list)
 {
   shelf *tmp_shelf = NULL;
@@ -295,14 +309,14 @@ void print_warehouse(warehouse *warehouse_list)
 	}
     }
 }
-/*
+
 void print_cart(tree* tree, cart* cart)
 {
   printf("This is your shopping cart");
   print_line();
   printf("shopping cart woho");
   print_line();
-  } */
+  } 
 
 shelf * print_20(struct warehouse *warehouse_list, struct shelf *shelf_start)
 {
@@ -331,7 +345,8 @@ shelf * print_20(struct warehouse *warehouse_list, struct shelf *shelf_start)
 	}
     }
   return shelf;
-}
+} */
+
 void print_add_shelf(char *name, char *description, int price, char *shelf_num, int num_items)
 {
   printf("\n\n");
@@ -349,7 +364,7 @@ void print_box_shelf(char *name, char *description, int price, char *shelf_num, 
   printf(" Number of items\t%d\n", num_items);
   printf("=====\t\t\t=====\n\n");
 }
-
+/*
 void print_box_shelf2(shelf* shelf)
 {
   char *name = get_name(shelf);
@@ -359,7 +374,7 @@ void print_box_shelf2(shelf* shelf)
   int num_items = get_num_items(shelf);
   print_box_shelf(name, description, price, shelf_num, num_items);
 }
-
+*/
 void print_box_shelf_num(char *name, char *description, int price, char *shelf_num, int num_items)
 {
   printf("=====\t\t\t=====\n");
@@ -371,27 +386,27 @@ void print_box_shelf_num(char *name, char *description, int price, char *shelf_n
   printf("=====\t\t\t=====\n\n");
 }
 
-void print_name(shelf *shelf)
+void print_name(node *node)
 {
-  printf("Name:\t\t%s", get_name(shelf));
+  printf("Name:\t\t%s", get_name(node));
 }
 
-void print_description(shelf *shelf)
+void print_description(node *node)
 {
-  printf("Description:\t%s", get_description(shelf));
+  printf("Description:\t%s", get_description(node));
 }
 	    
-void print_price(shelf *shelf)
+void print_price(node *node)
 {
-  printf("Price:\t\t%d kr", get_price(shelf));
+  printf("Price:\t\t%d kr", get_price(node));
 }
 	  
-void print_shelf_num(shelf *shelf)
+void print_shelf_num(node *node)
 {
-  printf("Shelf number:\t%s", get_shelf_num(shelf));
+  printf("Shelf number:\t%s", get_shelf_name(node));
 }
 	   
-void print_num_items(shelf *shelf)
+void print_num_items(node *node)
 {
-  printf("Number of items:\t%d", get_num_items(shelf));
+  printf("Number of items:\t%d", get_amount(node));
 }

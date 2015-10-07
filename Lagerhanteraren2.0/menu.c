@@ -1,5 +1,4 @@
 #include "menu.h"
-#include "tree.h"
 
 
 void print_main_menu()
@@ -13,14 +12,13 @@ void print_main_menu()
   puts("5. List all items in the database");
   puts("6. Add items to cart");
   puts("0. Exit program");
-  //create_new_node("Katt", "svart", 900, "A23", 2);
-
+  
 }
 
 void main_menu()
 {
 
-  warehouse *warehouse_list = new_warehouse();
+ tree_root* tree = create_new_tree();
   
   bool cont = true;
   
@@ -34,28 +32,27 @@ void main_menu()
       switch (answer)
 	{
 	case 1:
-	  add_shelf_IO(warehouse_list);
+	  add_shelf_IO(tree);
 	  break;
 
 	case 2:
-	  remove_shelf_IO(warehouse_list);
+	  puts("Remove");//remove_shelf_IO(warehouse_list);
 	  break;
 
 	case 3:
-	  edit_shelf_IO(warehouse_list);
+	  puts("Remove"); //edit_shelf_IO(warehouse_list);
 	  break;
 
 	case 4:
-	  undo_action_IO(warehouse_list);
+	  puts("Undo");//undo_action_IO(warehouse_list);
 	  break;
 
 	case 5:
-	  print_warehouse(warehouse_list);
+	  print_tree(tree);
 	  break;
 
 	case 6:
-	  puts("Fix menu for ADD A ITEM TO CART");
-	  //add_item_to_chart_IO();
+	  add_item_to_chart_IO();
 	  break;
 
 	case 0:

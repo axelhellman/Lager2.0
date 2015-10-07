@@ -1,7 +1,7 @@
 #include "tree.h"
 
 
-struct tree_s
+struct tree_root_s
 {
   node *top_node; //tree är top-node
   //  cart *cart;
@@ -35,7 +35,7 @@ struct shelf_node_s
   char* shelf_name;
   int amount;
   shelf_node *next_shelf;
-};
+}; 
 /*
 struct cart_s
 {
@@ -55,11 +55,28 @@ char * get_name(node *node)
 {
   return (node -> ware.name);
 }
+char * get_description(node *node)
+{
+  return (node -> ware.description);
+}
+int get_price(node *node)
+{
+  return (node -> ware.price);
+}
+
+char * get_shelf_name(node *node)
+{
+  return (node -> ware.list -> first -> shelf_name);
+}
+int get_amount(node *node)
+{
+  return (node -> ware.list -> total_amount);
+}
 
 
 node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
 {
-  node *node = calloc(1, sizeof(node));
+  node *node = calloc(1, sizeof(struct node_s));
   assert(node != NULL);
 
   node -> left_node = NULL;
@@ -69,13 +86,13 @@ node * create_new_node(char* name, char* description, int price, char* shelf_nam
   node -> ware.description = description;
   node -> ware.price = price; //ska det va punkt här istället för pil?
   
-  list *list = calloc(1, sizeof(list));
+  list *list = calloc(1, sizeof(struct list_s));
   assert(list != NULL);
 
-  node -> ware.list -> total_amount = amount;
   node -> ware.list = list;
+  node -> ware.list -> total_amount = amount;
   
-  shelf_node *shelf_node = calloc(1, sizeof(shelf_node));
+  shelf_node *shelf_node = calloc(1, sizeof(struct shelf_node_s));
   assert(shelf_node != NULL);
   
   list -> first = shelf_node;
@@ -90,6 +107,8 @@ node * create_new_node(char* name, char* description, int price, char* shelf_nam
 
 node* find_node(node* node, char* name)
 {
+  if (node == NULL) return NULL;
+  
   char* crnt_node_name = get_name(node);
 
   if (strcmp(name, crnt_node_name) == 0)
@@ -108,28 +127,37 @@ node* find_node(node* node, char* name)
   return NULL;
 }
 
+bool node_exists(tree_root* tree, char* name)
+{
+  if (find_node(tree -> top_node, name) != NULL) return true;
+  return false;
+}
 
-void update_node()
+void update_node(node* node, char* shelf_name, int amount)
 {
   puts("hej");
 }
 
-void insert_or_update(tree* tree, char* name, char* description, int price, char* shelf_name, int amount)
+void insert_or_update(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount)
 {
-  if (find_node(tree -> top_node, name) == NULL)
+  printf("insert_or_update");
+  node * node = find_node(tree -> top_node, name);
+  if (node == NULL)
     {
       insert_new_node(tree, name, description, price, shelf_name, amount);
     }
   else // find_node == any node
     {
-      update_node();
+      update_node(node, shelf_name, amount);
     }
 }
 
-void insert_new_node(tree * tree, char* name, char* description, int price, char* shelf_name, int amount) // TODO: ta med trädet?
+void insert_new_node(tree_root * tree, char* name, char* description, int price, char* shelf_name, int amount) // TODO: ta med trädet?
 {
-node* new_node = create_new_node(name, description, price, shelf_name, amount);
-// char* name = get_name(new_node);
+  printf("inne i insert_new_node");
+  node* new_node = create_new_node(name, description, price, shelf_name, amount);
+  print_tree(new_node);
+  
   if (tree_is_empty(tree))
     {
       tree -> top_node = new_node;
@@ -159,13 +187,13 @@ node* new_node = create_new_node(name, description, price, shelf_name, amount);
 	      continue;
 	    }
 	  crnt_node -> left_node = new_node;
-	  return;
+	  return; 
 	} 
-    }
+	}
 }
 
 
-bool tree_is_empty(tree *tree)
+bool tree_is_empty(tree_root *tree)
 {
   if (tree -> top_node == NULL)
     {
@@ -177,31 +205,32 @@ bool tree_is_empty(tree *tree)
     }
 }
 
-tree* create_new_tree()
+tree_root* create_new_tree()
 {
-  tree *tree = calloc(1, sizeof(tree));
-  tree -> top_node = NULL;
-  return (tree);
+  tree_root *tree_root = calloc(1, sizeof(struct tree_root_s));
+  tree_root -> top_node = NULL;
+  return (tree_root);
 }
 
 
- void tree_print(node *n) 
+ void print_tree(node *n) 
  {
+  printf("inne i tree_print");
    if(n)
      {
-       tree_print (n->left_node);
+       print_tree (n->left_node);
        printf("%s ", n->ware.name); //TODO kanske
-       tree_print (n->right_node);
+       print_tree (n->right_node);
      }
  }
 
-
-
- 
+/*
  int main (void)
  {
    printf("Hej hej");
-   tree *tree = create_new_tree();
+   print_tree(tree -> top_node);
    printf("hej igen");
-   //insert_new_node(tree, "Gurka", "Grön och skön", 12, "A23", 2);
+   insert_or_update(tree, "Gurka", "Grön och skön", 12, "A23", 2);
+   
  }
+*/

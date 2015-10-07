@@ -9,6 +9,34 @@ bool only_digits(char* answer);
 // void lower_letter(char* answer, int i);
 
 
+char* ask_name()
+{
+  return (ask_str_q("Name:"));
+}
+
+char* ask_description()
+{
+  return (ask_str_q("Description:"));
+}
+
+int ask_price()
+{
+  return (ask_int_q("Price (kr):", 1, 99999999));
+}
+
+char* ask_shelf_name()
+{
+  char* shelf_name = ask_str_q("Shelf number:");
+  //shelf_num = fix_shelf_num(warehouse_list, shelf_num);
+  return shelf_name;
+}
+
+int ask_num_items()
+{
+  return (ask_int_q("Number of items:", 1, 99999999));
+
+}
+/*
 int ask_index(warehouse* warehouse_list, int page)
 {
   int answer;
@@ -30,7 +58,7 @@ int ask_index(warehouse* warehouse_list, int page)
     }
   return index;
 }
-
+*/
 
 char* ask_str_q (char *question)
 {
@@ -136,7 +164,7 @@ char ask_alt(char* question, char* alternatives)
 
 }
 
-
+/*
 char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num)
 {
   while (true)
@@ -163,7 +191,7 @@ char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num)
 
 
 
-
+*/
 
 
 // --------------------------------------------------------------
