@@ -34,10 +34,13 @@ void insert_or_update(tree_root* tree, char* name, char* description, int price,
   
 node * find_node(node* node, char* name);
 
+tree_root * create_new_tree();
+
 char * get_name(node *node);
 char * get_description(node *node);
 int get_price(node *node);
 char * get_shelf_name(node *node);
 int get_amount(node *node);
+node* get_root(tree_root *tree);
 
 #endif /* TREE_H */

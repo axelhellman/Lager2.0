@@ -22,7 +22,7 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf);
 
 
 
-void add_item_to_chart_IO()
+void add_item_to_cart_IO()
 {
   // print_cart(); //not_implemented
   char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [n]ext 20 items\n [e]xit", "cne");
@@ -51,8 +51,8 @@ void add_shelf_IO(tree_root *tree)
     {
       if (node_exists(tree, name))
 	{
-	  node = find_node(tree -> top_node, name);
-	  printf("%s is already in the warehouse.", name);
+	  node = find_node(get_root(tree), name);
+	  printf("%s is already in the warehouse.\n", name);
 	  description = get_description(node);
 	  price = get_price(node);
 	  print_description(node);
@@ -96,7 +96,7 @@ void remove_shelf_IO(tree_root *tree)
       printf("The warehouse is empty!\n");
       return;
     }
-  print_tree(tree -> top_node);
+  print_tree(get_root(tree));
   /*
   shelf* shelf = print_20(warehouse_list, NULL);
   char ans = 0;
@@ -189,18 +189,20 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf)
       }
 }
 
+*/
 
-
-void edit_shelf_IO(warehouse* warehouse_list)
+void edit_shelf_IO(tree_root * tree)
 {
-  bool continue_edit = true;
+  // bool continue_edit = true;
 
-  if(warehouse_empty(warehouse_list))
+  if(tree_is_empty(tree))
     {
       printf("The warehouse is empty!\n");
       return;
     }
-  
+  print_tree(get_root(tree));
+    }
+    /*  
   while (continue_edit)
     {
       shelf *shelf = NULL;
@@ -400,25 +402,25 @@ void print_box_shelf_name(char *name, char *description, int price, char *shelf_
 
 void print_name(node *node)
 {
-  printf("Name:\t\t%s", get_name(node));
+  printf("Name:\t\t%s\n", get_name(node));
 }
 
 void print_description(node *node)
 {
-  printf("Description:\t%s", get_description(node));
+  printf("Description:\t%s\n", get_description(node));
 }
 	    
 void print_price(node *node)
 {
-  printf("Price:\t\t%d kr", get_price(node));
+  printf("Price:\t\t%d kr\n", get_price(node));
 }
 	  
 void print_shelf_name(node *node)
 {
-  printf("Shelf number:\t%s", get_shelf_name(node));
+  printf("Shelf number:\t%s\n", get_shelf_name(node));
 }
 	   
 void print_num_items(node *node)
 {
-  printf("Number of items:\t%d", get_amount(node));
+  printf("Number of items:\t%d\n", get_amount(node));
 }

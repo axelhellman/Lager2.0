@@ -63,7 +63,6 @@ int get_price(node *node)
 {
   return (node -> ware.price);
 }
-
 char * get_shelf_name(node *node)
 {
   return (node -> ware.list -> first -> shelf_name);
@@ -72,7 +71,10 @@ int get_amount(node *node)
 {
   return (node -> ware.list -> total_amount);
 }
-
+node* get_root(tree_root *tree)
+{
+  return (tree -> top_node);
+}
 
 node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
 {
@@ -140,21 +142,21 @@ void update_node(node* node, char* shelf_name, int amount)
 
 void insert_or_update(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount)
 {
-  printf("insert_or_update");
   node * node = find_node(tree -> top_node, name);
   if (node == NULL)
     {
       insert_new_node(tree, name, description, price, shelf_name, amount);
+      return;
     }
   else // find_node == any node
     {
       update_node(node, shelf_name, amount);
+      return;
     }
 }
 
 void insert_new_node(tree_root * tree, char* name, char* description, int price, char* shelf_name, int amount) // TODO: ta med trädet?
 {
-  printf("inne i insert_new_node");
   node* new_node = create_new_node(name, description, price, shelf_name, amount);
   print_tree(new_node);
   
@@ -163,10 +165,10 @@ void insert_new_node(tree_root * tree, char* name, char* description, int price,
       tree -> top_node = new_node;
       return;
     }
-  
+  node* crnt_node = tree -> top_node;
+
   while (true)
     {
-      node* crnt_node = tree -> top_node;
       char* crnt_node_name = get_name(crnt_node);  
 
       if (strcmp(name, crnt_node_name) > 0)
@@ -216,11 +218,10 @@ tree_root* create_new_tree()
 
  void print_tree(node *n) 
  {
-  printf("inne i tree_print");
    if(n)
      {
        print_tree (n->left_node);
-       printf("%s ", n->ware.name); //TODO kanske
+       printf("%d %s\n", 100, n->ware.name); //TODO kanske
        print_tree (n->right_node);
      }
  }

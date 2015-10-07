@@ -17,12 +17,15 @@ void print_main_menu()
 
 void main_menu()
 {
-
- tree_root * tree = create_new_tree();
+  bool cont = false;
+  tree_root * tree = create_new_tree();
+  insert_or_update(tree, "Gurka", "grön", 12, "A2", 2);
+  insert_or_update(tree, "Häst", "fulsfdkj", 34, "A5", 1);
+  insert_or_update(tree, "Berg", "högt", 10000, "G34", 3);
+  insert_or_update(tree, "Lars", "grön", 2, "F2", 1);
+  insert_or_update(tree, "Danne", "skäggig", 1, "E2", 1);
   
-  bool cont = true;
-  
-  while (cont)
+  while (!cont)
     {
       print_main_menu();
 
@@ -36,7 +39,7 @@ void main_menu()
 	  break;
 
 	case 2:
-	  puts("Remove");//remove_shelf_IO(warehouse_list);
+	  remove_shelf_IO(tree);
 	  break;
 
 	case 3:
@@ -48,11 +51,11 @@ void main_menu()
 	  break;
 
 	case 5:
-	  print_tree(tree -> top_node);
+	  print_tree(get_root(tree));
 	  break;
 
 	case 6:
-	  add_item_to_chart_IO();
+	  add_item_to_cart_IO();
 	  break;
 
 	case 0:

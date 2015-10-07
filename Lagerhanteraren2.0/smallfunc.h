@@ -4,11 +4,12 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include "tree.h"
 
 #ifndef SMALLFUNC_H 
 #define SMALLFUNC_H
 
-#include "tree.h"
+
 
 //int ask_index(warehouse* warehouse_list, int page);
 

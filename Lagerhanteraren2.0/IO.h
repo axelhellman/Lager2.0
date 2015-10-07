@@ -14,11 +14,14 @@
 //funktioner som menu kallar på
 
 void add_shelf_IO(tree_root * tree);
+
+void remove_shelf_IO(tree_root * tree);
+
+void add_item_to_cart_IO();
+
+
+void edit_shelf_IO(tree_root * tree);
 /*
-void remove_shelf_IO(warehouse *warehouse_list);
-
-void edit_shelf_IO(warehouse *warehouse_list);
-
 void undo_action_IO(warehouse * warehouse_list); */
 
 bool exit_warehouse();
