@@ -188,8 +188,9 @@ void insert_new_node(tree_root * tree, char* name, char* description, int price,
 	    }
 	  crnt_node -> left_node = new_node;
 	  return; 
-	} 
 	}
+      
+    }
 }
 
 

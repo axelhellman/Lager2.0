@@ -5,6 +5,9 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+#ifndef TREE_H
+#define TREE_H
+
 typedef struct tree_root_s tree_root;
 typedef struct node_s node;
 typedef struct list_s list;
@@ -29,10 +32,12 @@ bool tree_is_empty(tree_root* tree);
 
 void insert_or_update(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount);
   
-node* find_node(node* node, char* name);
+node * find_node(node* node, char* name);
 
 char * get_name(node *node);
 char * get_description(node *node);
 int get_price(node *node);
 char * get_shelf_name(node *node);
 int get_amount(node *node);
+
+#endif /* TREE_H */

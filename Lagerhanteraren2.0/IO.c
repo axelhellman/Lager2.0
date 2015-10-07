@@ -1,16 +1,18 @@
 #include "IO.h"
 
-void print_add_shelf(char *name, char *description, int price, char *shelf_num, int num_items);
+typedef struct tree_root_s tree_root;
+
+void print_add_shelf(char *name, char *description, int price, char *shelf_name, int num_items);
 
 void print_name(node *node);
 void print_description(node *node);	    
 void print_price(node *node);	  
-void print_shelf_num(node *node);	   
+void print_shelf_name(node *node);	   
 void print_num_items(node *node);
 
-void print_box_shelf(char *name, char *description, int price, char *shelf_num, int num_items);
+void print_box_shelf(char *name, char *description, int price, char *shelf_name, int num_items);
 //void print_box_shelf2(shelf* shelf);
-void print_box_shelf_num(char *name, char *description, int price, char *shelf_num, int num_items);
+void print_box_shelf_name(char *name, char *description, int price, char *shelf_name, int num_items);
 /*
 shelf * print_20(warehouse *warehouse_list, shelf *shelf_start);
 
@@ -33,36 +35,46 @@ void add_shelf_IO(tree_root *tree)
   char* name;
   char* description;
   int price;
-  char* shelf_num; 
+  char* shelf_name; 
   int num_items;
   node* node;
   
   name = ask_name();
-  if (node_exists(tree -> top_node, name))
-    {
-      node = find_node(tree -> top_node, name);
-      printf("%s is already in the warehouse.", name);
-      description = get_description(node);
-      price = get_price(node);
-      print_description(node);
-      print_price(node);
-    }
-  else
+  if (tree_is_empty(tree))
     {
       description = ask_description();
       price = ask_price();
+      shelf_name = ask_shelf_name();
+      num_items = ask_num_items();
     }
-  shelf_num = ask_shelf_name();
-  num_items = ask_num_items();
+  else
+    {
+      if (node_exists(tree, name))
+	{
+	  node = find_node(tree -> top_node, name);
+	  printf("%s is already in the warehouse.", name);
+	  description = get_description(node);
+	  price = get_price(node);
+	  print_description(node);
+	  print_price(node);
+	}
+      else
+	{
+	  description = ask_description();
+	  price = ask_price();
+	}
+      shelf_name = ask_shelf_name();
+      num_items = ask_num_items();
+    }
 
   print_line();
 
-  print_add_shelf(name, description, price, shelf_num, num_items);
+  print_add_shelf(name, description, price, shelf_name, num_items);
 
   char ans = ask_alt("[s]ave this item / [d]on't save / [e]dit", "sde");
   if  (ans == 's')
     {
-      insert_or_update(tree, name, description, price, shelf_num, num_items);
+      insert_or_update(tree, name, description, price, shelf_name, num_items);
       printf("\n%s added to the warehouse!\n", name);
     }
   else if (ans == 'd')
@@ -71,7 +83,7 @@ void add_shelf_IO(tree_root *tree)
     }
   else
     {
-      insert_or_update(tree, name, description, price, shelf_num, num_items);
+      insert_or_update(tree, name, description, price, shelf_name, num_items);
       //edit_shelf_IO_aux(tree, name);
     }
 }
@@ -132,14 +144,14 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf)
   char* name = get_name(choosed_shelf);
   char* description = get_description(choosed_shelf);
   int price = get_price(choosed_shelf);
-  char* shelf_num = get_shelf_num(choosed_shelf);
+  char* shelf_name = get_shelf_name(choosed_shelf);
   int num_items = get_num_items(choosed_shelf);
   
   while (cont_edit)
     {
-      edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_num, num_items);
+      edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_name, num_items);
       puts("\n-----EDIT ITEM-------------");
-      print_box_shelf_num(name, description, price, shelf_num, num_items);
+      print_box_shelf_name(name, description, price, shelf_name, num_items);
       int edit = ask_int_q("What would you like to edit?", 1, 5);
   
       switch (edit)
@@ -154,9 +166,9 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf)
 	  print_price(choosed_shelf);
 	  price = ask_int_q("\nNew price", 1, 99999999);} break;
 	case 4: {
-	  print_shelf_num(choosed_shelf);
-	  shelf_num = ask_str_q("\nNew shelf number: ");
-	  shelf_num = fix_shelf_num(warehouse_list, shelf_num);} break;
+	  print_shelf_name(choosed_shelf);
+	  shelf_name = ask_str_q("\nNew shelf number: ");
+	  shelf_name = fix_shelf_name(warehouse_list, shelf_name);} break;
 	case 5: {
 	  print_num_items(choosed_shelf);
 	  num_items = ask_int_q("\nNew num_items: ", 1, 99999999);} break;
@@ -168,7 +180,7 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf)
   bool save_ware = ask_yn("Save this ware? y/n");
   if (save_ware)
     {
-      edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_num, num_items);
+      edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_name, num_items);
       puts("Item successfully updated");
     }
     else
@@ -347,20 +359,20 @@ shelf * print_20(struct warehouse *warehouse_list, struct shelf *shelf_start)
   return shelf;
 } */
 
-void print_add_shelf(char *name, char *description, int price, char *shelf_num, int num_items)
+void print_add_shelf(char *name, char *description, int price, char *shelf_name, int num_items)
 {
   printf("\n\n");
   printf("\tYour new item\n");
-  print_box_shelf(name, description, price, shelf_num, num_items);
+  print_box_shelf(name, description, price, shelf_name, num_items);
 }
 
-void print_box_shelf(char *name, char *description, int price, char *shelf_num, int num_items)
+void print_box_shelf(char *name, char *description, int price, char *shelf_name, int num_items)
 {
   printf("=====\t\t\t=====\n");
   printf(" Name\t\t\t%s\n", name);
   printf(" Description\t\t%s\n", description);
   printf(" Price\t\t\t%d\n", price);
-  printf(" Shelf number\t\t%s\n", shelf_num);
+  printf(" Shelf number\t\t%s\n", shelf_name);
   printf(" Number of items\t%d\n", num_items);
   printf("=====\t\t\t=====\n\n");
 }
@@ -370,18 +382,18 @@ void print_box_shelf2(shelf* shelf)
   char *name = get_name(shelf);
   char *description = get_description(shelf);
   int price = get_price(shelf);
-  char *shelf_num = get_shelf_num(shelf);
+  char *shelf_name = get_shelf_name(shelf);
   int num_items = get_num_items(shelf);
-  print_box_shelf(name, description, price, shelf_num, num_items);
+  print_box_shelf(name, description, price, shelf_name, num_items);
 }
 */
-void print_box_shelf_num(char *name, char *description, int price, char *shelf_num, int num_items)
+void print_box_shelf_name(char *name, char *description, int price, char *shelf_name, int num_items)
 {
   printf("=====\t\t\t=====\n");
   printf("1. Name\t\t\t%s\n", name);
   printf("2. Description\t\t%s\n", description);
   printf("3. Price\t\t\t%d\n", price);
-  printf("4. Shelf number\t\t%s\n", shelf_num);
+  printf("4. Shelf number\t\t%s\n", shelf_name);
   printf("5. Number of items\t%d\n", num_items);
   printf("=====\t\t\t=====\n\n");
 }
@@ -401,7 +413,7 @@ void print_price(node *node)
   printf("Price:\t\t%d kr", get_price(node));
 }
 	  
-void print_shelf_num(node *node)
+void print_shelf_name(node *node)
 {
   printf("Shelf number:\t%s", get_shelf_name(node));
 }

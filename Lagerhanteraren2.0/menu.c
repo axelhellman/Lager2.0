@@ -18,7 +18,7 @@ void print_main_menu()
 void main_menu()
 {
 
- tree_root* tree = create_new_tree();
+ tree_root * tree = create_new_tree();
   
   bool cont = true;
   
@@ -40,7 +40,7 @@ void main_menu()
 	  break;
 
 	case 3:
-	  puts("Remove"); //edit_shelf_IO(warehouse_list);
+	  edit_shelf_IO(tree);
 	  break;
 
 	case 4:
@@ -48,7 +48,7 @@ void main_menu()
 	  break;
 
 	case 5:
-	  print_tree(tree);
+	  print_tree(tree -> top_node);
 	  break;
 
 	case 6:
