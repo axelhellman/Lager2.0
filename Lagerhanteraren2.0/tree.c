@@ -171,7 +171,7 @@ void balance_tree(node* node)
   puts("lala");
 }
 
-
+/*
 void remove_node(node* node, char* name, list * list, shelf_node * shelf_node)
  )
 {
@@ -194,7 +194,7 @@ void remove_node(node* node, char* name, list * list, shelf_node * shelf_node)
       //Fall då det finns fler än en vara på olika hyllor
     }
   
-}
+} */
 
 
 bool node_exists(tree_root* tree, char* name)
@@ -290,7 +290,7 @@ void print_tree(node *n)
    if(n)
      {
        print_tree (n->left_node);
-       printf("-%s\n", n->ware.name); //TODO kanske
+       printf("-%s\n", get_name(n)); //TODO kanske
        print_tree (n->right_node);
       
      }

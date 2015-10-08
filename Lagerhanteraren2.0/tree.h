@@ -25,7 +25,7 @@ typedef struct shelf_s shelf;
 
 void print_tree(node* node);
 
-node * create_new_node(ArgsWare;
+node * create_new_node(ArgsWare);
 
 void destroy_tree(node* node); //argument?
 
