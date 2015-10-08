@@ -8,10 +8,16 @@
 #ifndef TREE_H
 #define TREE_H
 
+#define TreeRoot get_root(tree)
+#define ArgsWare char* name, char* description, int price, char* shelf_name, int amount
+#define N_Content_eq_Ware ware* ware = node -> n_content
+
 typedef struct tree_root_s tree_root;
 typedef struct node_s node;
+typedef struct ware_s ware;
 typedef struct list_s list;
-typedef struct shelf_node_s shelf_node;
+typedef struct linked_list_node_s linked_list_node;
+typedef struct shelf_s shelf;
 
 //typedef struct cart_s cart;
 
@@ -19,7 +25,7 @@ typedef struct shelf_node_s shelf_node;
 
 void print_tree(node* node);
 
-node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount);
+node * create_new_node(ArgsWare;
 
 void destroy_tree(node* node); //argument?
 

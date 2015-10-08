@@ -93,7 +93,7 @@ int ask_int_q (char *question, int low, int high)
 	}
       strip (input);
    
-      if (strcmp(input, "0")==0)
+      if (strcmp(input, "0")==0) 
 	{
 	  if (out_of_range(0, low, high))
 	    {

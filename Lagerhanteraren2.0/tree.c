@@ -1,6 +1,5 @@
 #include "tree.h"
 
-
 struct tree_root_s
 {
   node *top_node; //tree är top-node
@@ -9,34 +8,38 @@ struct tree_root_s
 
 struct node_s
 {
-  struct ware_s
-  {
-    char* name;
-    char* description;
-    int price;
-
-    list *list;
-  } ware;
-
+  char* key;
+  void *n_content;
   node *left_node;
   node *right_node; 
 };
 
+struct ware_s
+{
+  char* name;
+  char* description;
+  int price;
+  list *list;
+};
 
 struct list_s
 {
   int total_amount;
-  shelf_node *first;
-  shelf_node *last;
+  linked_list_node *ll_first;
+  linked_list_node *ll_last;
 };
 
-struct shelf_node_s
+struct linked_list_node_s
+{
+  void* ll_content;
+  linked_list_node* next_node;
+};
+
+struct shelf_s
 {
   char* shelf_name;
   int amount;
-  shelf_node *next_shelf;
-};
-
+}; 
 
 /*
 struct cart_s
@@ -55,56 +58,88 @@ struct cart_s
 
 char * get_name(node *node)
 {
-  return (node -> ware.name);
+  return (node -> key);
 }
 char * get_description(node *node)
 {
-  return (node -> ware.description);
+  N_Content_eq_Ware;
+  return (ware -> description);
 }
 int get_price(node *node)
 {
-  return (node -> ware.price);
+  N_Content_eq_Ware;
+  return (ware -> price);
 }
 char * get_shelf_name(node *node)
 {
-  return (node -> ware.list -> first -> shelf_name);
+  N_Content_eq_Ware;
+  shelf * tmp_shelf = ware -> list -> ll_first -> ll_content;
+  // här tror jag att jag gör så att pekaren tmp_shelf pekar på samma sak som pekaren ll_content. Det här känns lite fuskigt?!
+  return (tmp_shelf -> shelf_name);
 }
 int get_amount(node *node)
 {
-  return (node -> ware.list -> total_amount);
+  N_Content_eq_Ware;
+  return (ware -> list -> total_amount);
 }
 node* get_root(tree_root *tree)
 {
   return (tree -> top_node);
 }
 
+ware* create_new_ware(char* name, char* description, int price)
+{
+  ware* ware = calloc(1, sizeof(struct ware_s));
+  assert (ware != NULL);
+
+  ware -> name = name;
+  ware -> description = description;
+  ware -> price = price;
+  return ware;
+}
+
+list* create_new_list(amount)
+{
+ list *list = calloc(1, sizeof(struct list_s));
+  assert(list != NULL);
+  list -> total_amount = amount;
+  return list;
+}
+
+linked_list_node* create_new_ll(list * list)
+{
+  linked_list_node *ll_node = calloc(1, sizeof(struct linked_list_node_s));
+  assert(ll_node != NULL);
+
+  list -> ll_first = ll_node;
+  list -> ll_last = ll_node;
+  return ll_node;
+}
+
+shelf* create_new_shelf(char* shelf_name, int amount)
+{
+ shelf *shelf = calloc(1, sizeof(struct shelf_s));
+  assert(shelf != NULL);
+  shelf -> shelf_name = shelf_name;
+  shelf -> amount = amount;
+  return shelf;
+}
 node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
 {
   node *node = calloc(1, sizeof(struct node_s));
   assert(node != NULL);
+  node -> key = name;
 
-  node -> left_node = NULL;
-  node -> right_node = NULL;
-  
-  node -> ware.name = name; // (*ware).name
-  node -> ware.description = description;
-  node -> ware.price = price; //ska det va punkt här istället för pil?
-  
-  list *list = calloc(1, sizeof(struct list_s));
-  assert(list != NULL);
+  ware* ware = node -> n_content;
+  ware = create_new_ware(name, description, price);
 
-  node -> ware.list = list;
-  node -> ware.list -> total_amount = amount;
+  list* list = create_new_list(amount);
+  ware -> list = list;
   
-  shelf_node *shelf_node = calloc(1, sizeof(struct shelf_node_s));
-  assert(shelf_node != NULL);
+  linked_list_node * ll_node = create_new_ll(list);
   
-  list -> first = shelf_node;
-  list -> last = shelf_node;
-  
-  shelf_node -> shelf_name = shelf_name;
-  shelf_node -> amount = amount;
-  shelf_node -> next_shelf = NULL;
+  shelf * shelf = create_new_shelf(shelf_name, price);
+  ll_node -> ll_content = shelf; 
   
   return node;
 }
