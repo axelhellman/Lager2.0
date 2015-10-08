@@ -97,7 +97,6 @@ ware* create_new_ware(char* name, char* description, int price)
   ware -> price = price;
   return ware;
 }
-
 list* create_new_list(amount)
 {
  list *list = calloc(1, sizeof(struct list_s));
@@ -105,7 +104,6 @@ list* create_new_list(amount)
   list -> total_amount = amount;
   return list;
 }
-
 linked_list_node* create_new_ll(list * list)
 {
   linked_list_node *ll_node = calloc(1, sizeof(struct linked_list_node_s));
@@ -115,7 +113,6 @@ linked_list_node* create_new_ll(list * list)
   list -> ll_last = ll_node;
   return ll_node;
 }
-
 shelf* create_new_shelf(char* shelf_name, int amount)
 {
  shelf *shelf = calloc(1, sizeof(struct shelf_s));
@@ -124,22 +121,23 @@ shelf* create_new_shelf(char* shelf_name, int amount)
   shelf -> amount = amount;
   return shelf;
 }
+void connect(node* n, ware* w, list* l, linked_list_node* ll_n, shelf* s)
+{
+  n -> n_content = w;
+  w -> list = l;
+  ll_n -> ll_content = s;
+}
 node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
 {
   node *node = calloc(1, sizeof(struct node_s));
   assert(node != NULL);
   node -> key = name;
 
-  ware* ware = node -> n_content;
-  ware = create_new_ware(name, description, price);
-
+  ware* ware = create_new_ware(name, description, price);
   list* list = create_new_list(amount);
-  ware -> list = list;
-  
   linked_list_node * ll_node = create_new_ll(list);
-  
   shelf * shelf = create_new_shelf(shelf_name, price);
-  ll_node -> ll_content = shelf; 
+  connect(node, ware, list, ll_node, shelf);
   
   return node;
 }
@@ -296,7 +294,7 @@ void print_tree(node *n)
      }
  }
 
-
+/*
 node* remove_node(node *node, char* name) // TODO: Behövs antagligen fler argument
 {
   node *node = find_node(TreeRoot, name);
@@ -320,28 +318,18 @@ else if (temporary->right_node == NULL)
    free(temporary); // TODO: lika som ovna
    return node;
  }
-/*
+
 // En node med två löv till v & h
 // temp = minValueNode(->right_node);
 node->name = temporary->name;
 node->right_node = remove_node(node->right_node, temporary->name);
-*/
+
       }
   return node;
 }
 
-void update_node(node* node, char* shelf_name, int amount)
-{
-  puts("hej");
-}
 
-
-void balance_tree(node* node)
-{ 
-  puts("lala");
-}
-
-/*node * minValueNode(node* node)
+node * minValueNode(node* node)
 {
   node*  = node;
   
