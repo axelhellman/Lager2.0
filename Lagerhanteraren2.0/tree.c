@@ -296,6 +296,66 @@ void print_tree(node *n)
      }
  }
 
+
+node* remove_node(node *node, char* name) // TODO: Behövs antagligen fler argument
+{
+  node *node = find_node(TreeRoot, name);
+  
+  // base case
+  if (temporary == NULL) printf("non existing\n");
+  
+
+     // En node med ett barn till höger/vänster
+    else
+      {
+if (temporary->left_node == NULL)
+ {
+   temporary = node->right_node;
+   free(temporary); //TODO: free(listan m.m)
+   return node;
+ }
+else if (temporary->right_node == NULL)
+ {
+   temporary = node->left_node;
+   free(temporary); // TODO: lika som ovna
+   return node;
+ }
+/*
+// En node med två löv till v & h
+// temp = minValueNode(->right_node);
+node->name = temporary->name;
+node->right_node = remove_node(node->right_node, temporary->name);
+*/
+      }
+  return node;
+}
+
+void update_node(node* node, char* shelf_name, int amount)
+{
+  puts("hej");
+}
+
+
+void balance_tree(node* node)
+{ 
+  puts("lala");
+}
+
+/*node * minValueNode(node* node)
+{
+  node*  = node;
+  
+  // loop down to find the leftmost leaf 
+  while (current->left_node != NULL)
+        current = current->left_node;
+  
+  return current;
+}
+*/
+
+
+
+
 /*
  int main (void)
  {
