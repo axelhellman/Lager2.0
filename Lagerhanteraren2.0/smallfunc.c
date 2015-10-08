@@ -1,6 +1,6 @@
 #include "smallfunc.h"
 
-char* strip(char* str);
+void strip(char* str);
 void clear(void);
 bool check_shelf_ans(char* answer);
 void print_alt_chars(char* alternatives);
@@ -68,14 +68,15 @@ char* ask_str_q (char *question)
       printf("%s\n> ", question);
       fgets(input, sizeof(input), stdin);
     }
-  char* answer = strip(input);
+  strip(input);
+  
+  input[0] = toupper(input[0]);
 
-  answer[0] = toupper(answer[0]);
-
-  for (int i = 1; i<strlen(answer); ++i)
+  for (int i = 1; i<strlen(input); ++i)
     {
-      answer[i]=tolower(answer[i]);
+      input[i]=tolower(input[i]);
     }
+  char* answer = strdup(input);
   return answer;
 }
 
@@ -90,9 +91,9 @@ int ask_int_q (char *question, int low, int high)
 	  printf("%s\n> ", question);
 	  fgets(input, sizeof(input), stdin);
 	}
-      char* answer = strip (input);
+      strip (input);
    
-      if (strcmp(answer, "0")==0)
+      if (strcmp(input, "0")==0)
 	{
 	  if (out_of_range(0, low, high))
 	    {
@@ -106,13 +107,13 @@ int ask_int_q (char *question, int low, int high)
 	    }
 	}
 
-      if (only_digits(answer) == false)
+      if (only_digits(input) == false)
 	{
 	  question = "Please answer with digits and nothing else.";
 	  continue;
 	}
 
-      ok_ans = atoi(answer);
+      ok_ans = atoi(input);
 
       if (out_of_range(ok_ans, low, high))
 	{
@@ -121,7 +122,7 @@ int ask_int_q (char *question, int low, int high)
 	  continue;
 	}
       break;
-    }
+    }  
   return ok_ans;
 }
 
@@ -200,19 +201,18 @@ char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num)
 // --------------------------------------------------------------
 // --------------------------------------------------------------
 
-char* strip (char* str)
+void strip (char* str)
 {
-  char* copy = strdup(str);
-  int len = strlen (copy);
+  int len = strlen (str);
   for (int i = 0; i<len; ++i)
     {
-      if (copy[i] == '\n')
+      if (str[i] == '\n')
 	{
-	  copy[i] = '\0';
+	  str[i] = '\0';
 	  break;
 	}
     } 
-  return copy; //free??
+  return; //free??
 }
 
 void clear (void)
