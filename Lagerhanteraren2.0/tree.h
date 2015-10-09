@@ -25,7 +25,7 @@ void print_tree(node* node);
 
 node * create_new_node(ArgsWare);
 
-void destroy_tree(node* node); //argument?
+void destroy_tree(tree_root* tree); //argument?
 
 // skickar in ett namn på en vara och trädet. Returnerar true om varan redan finns. Annars returernar den false
 bool node_exists(tree_root* tree, char* name);
@@ -46,5 +46,6 @@ int get_price(node *node);
 char * get_shelf_name(node *node);
 int get_amount(node *node);
 node* get_root(tree_root *tree);
+
 
 #endif /* TREE_H */

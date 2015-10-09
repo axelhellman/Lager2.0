@@ -13,7 +13,7 @@
 
 //funktioner som menu kallar på
 
-void add_shelf_IO(tree_root * tree);
+void add_ware_IO(tree_root * tree);
 
 void remove_shelf_IO(tree_root * tree);
 

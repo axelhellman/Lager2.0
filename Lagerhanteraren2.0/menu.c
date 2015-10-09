@@ -35,7 +35,7 @@ void main_menu()
       switch (answer)
 	{
 	case 1:
-	  add_shelf_IO(tree);
+	  add_ware_IO(tree);
 	  break;
 
 	case 2:
@@ -51,7 +51,7 @@ void main_menu()
 	  break;
 
 	case 5:
-	  print_tree(get_root(tree));
+	  print_tree(TreeRoot);
 	  break;
 
 	case 6:
@@ -66,6 +66,6 @@ void main_menu()
 	default: puts ("defaaaaauuuuuult");	    
 	}
     }
-
+  printf("destroys tree");
   //destroy_tree(tree);
 }

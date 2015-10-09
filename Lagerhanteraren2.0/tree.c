@@ -1,12 +1,12 @@
 #include "tree.h"
 
-list* create_new_list(int amount);
+list* create_new_list(int amount); //lägg till destructor dest
 linked_list_node* create_new_ll(list* list);
 
 struct tree_root_s
 {
   node *top_node; //tree är top-node
-  void *data;
+  list *data;
 };
 
 struct node_s
@@ -25,9 +25,12 @@ struct ware_s
   list *list;
 };
 
+typedef void(*destructor)(void*);
+
 struct list_s
 {
   int total;
+  destructor free_content;
   linked_list_node *ll_first;
   linked_list_node *ll_last;
 };
@@ -47,7 +50,7 @@ struct shelf_s
 struct cart_item_s
 {
     char* name;
-    int* price;
+    int price;
     int amount;
     int total_price;
   };
@@ -82,7 +85,7 @@ node* get_root(tree_root *tree)
 {
   return (tree -> top_node);
 }
-cart_item* add_item_cart(node* n, char* name, int* price, int amount) //behövs name och price, dom tas ju från noden.
+cart_item* add_item_cart(node* n, int amount) 
 {
   cart_item* cart_item = calloc(1, sizeof(struct cart_item_s));
   cart_item -> name = get_name(n);
@@ -93,7 +96,7 @@ cart_item* add_item_cart(node* n, char* name, int* price, int amount) //behövs 
 
 list* create_new_cart()
 {
-  list* cart = create_new_list(0);
+  list* cart = create_new_list(0); //lägg till &destroy_cart_item
   linked_list_node * ll_node = create_new_ll(cart);
   cart -> ll_first = ll_node;
   cart -> ll_last = ll_node;
@@ -111,11 +114,12 @@ ware* create_new_ware(char* name, char* description, int price)
   ware -> price = price;
   return ware;
 }
-list* create_new_list(int total)
+list* create_new_list(int total) //lägg till destructor dest
 {
   list *list = calloc(1, sizeof(struct list_s));
   assert(list != NULL);
   list -> total = total;
+  //list -> free_content = dest;
   return list;
 }
 linked_list_node* create_new_ll(list * list)
@@ -150,7 +154,7 @@ node * create_new_node(char* name, char* description, int price, char* shelf_nam
   node -> key = name;
 
   ware* ware = create_new_ware(name, description, price);
-  list* list = create_new_list(amount);
+  list* list = create_new_list(amount); //lägg till &destroy_shelf
   linked_list_node * ll_node = create_new_ll(list);
   shelf * shelf = create_new_shelf(shelf_name, price);
   connect(node, ware, list, ll_node, shelf);
@@ -362,6 +366,73 @@ node * minValueNode(node* node)
 
 
 
+
+
+
+
+
+
+
+
+// remove node
+// 
+
+
+/*
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-------------- D E S T R O Y ------------------------------------------
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+ */
+
+/*
+
+void destroy_cart_item(void * ci)
+{
+  free(ci);
+}
+  
+void destroy_shelf(void* s)
+{
+  shelf* shelf = (shelf*) s;
+  free(shelf -> shelf_name);
+  free(s);
+}
+
+void destroy_list(list* l)
+{
+  linked_list_node* ll_node = l -> ll_first;
+  linked_list_node* tmp_ll_node = NULL;
+  while (ll_node != NULL)
+    {
+      tmp_ll_node = ll_node;
+      ll_node = ll_node -> next_node;
+      l -> free_content(ll_node -> ll_content);
+      
+      free(tmp_ll_node);
+    }
+  free(l)
+}
+
+
+void destroy_cart(cart* c)
+{
+  destroy_cart_item(cart_item* ci);
+  destroy_list(list* l);
+}
+
+void destroy_tree(tree_root* tree)
+{
+
+  destroy_shelf(shelf* s);
+  destroy_list(list* l); //and ll_nodes
+  destroy_ware(ware* w);
+  destroy_node(node* n);
+  destroy_cart(cart* c);
+} 
+*/
+
 /*
  int main (void)
  {
@@ -369,14 +440,8 @@ node * minValueNode(node* node)
    print_tree(tree -> top_node);
    printf("hej igen");
    insert_or_update(tree, "Gurka", "Grön och skön", 12, "A23", 2);
+
+   list* l = create_new_list(0, destroy_shelf);
    
  }
-
-
 */
-
-
-
-
-// remove node
-// 

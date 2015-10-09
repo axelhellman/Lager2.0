@@ -6,13 +6,13 @@ all: warehouse
 warehouse: main.c menu.o IO.o smallfunc.o tree.o
 	$(CC) $(FLAGS) main.c menu.o IO.o smallfunc.o tree.o -o main
 
-menu.o: menu.c menu.h IO.o smallfunc.o tree.o
+menu.o: menu.c menu.h #IO.o smallfunc.o tree.o
 	$(CC) $(FLAGS) menu.c -c
 
-IO.o: IO.c IO.h smallfunc.o tree.o
+IO.o: IO.c IO.h #smallfunc.o tree.o
 	$(CC) $(FLAGS) IO.c -c
 
-smallfunc.o: smallfunc.c smallfunc.h tree.o
+smallfunc.o: smallfunc.c smallfunc.h #tree.o
 	$(CC) $(FLAGS) smallfunc.c -c
 
 #database.o: database.c database.h

@@ -29,7 +29,7 @@ void add_item_to_cart_IO()
   printf("Your choice: %c", answer);
 }
 
-void add_shelf_IO(tree_root *tree)
+void add_ware_IO(tree_root *tree)
 {
   puts("\n----- ADD AN ITEM --------------------");
   char* name;
