@@ -1,9 +1,12 @@
 #include "tree.h"
 
+list* create_new_list(int amount);
+linked_list_node* create_new_ll(list* list);
+
 struct tree_root_s
 {
   node *top_node; //tree är top-node
-  //  cart *cart;
+  void *data;
 };
 
 struct node_s
@@ -24,7 +27,7 @@ struct ware_s
 
 struct list_s
 {
-  int total_amount;
+  int total;
   linked_list_node *ll_first;
   linked_list_node *ll_last;
 };
@@ -39,22 +42,15 @@ struct shelf_s
 {
   char* shelf_name;
   int amount;
-}; 
+};
 
-/*
-struct cart_s
+struct cart_item_s
 {
-  struct item_s
-  {
     char* name;
     int* price;
-    int* amount;
-    int* total_price;
-  }item;
-
-  cart_s *next_cart;
-  
-  }; */
+    int amount;
+    int total_price;
+  };
 
 char * get_name(node *node)
 {
@@ -80,13 +76,31 @@ char * get_shelf_name(node *node)
 int get_amount(node *node)
 {
   N_Content_eq_Ware;
-  return (ware -> list -> total_amount);
+  return (ware -> list -> total);
 }
 node* get_root(tree_root *tree)
 {
   return (tree -> top_node);
 }
+cart_item* add_item_cart(node* n, char* name, int* price, int amount) //behövs name och price, dom tas ju från noden.
+{
+  cart_item* cart_item = calloc(1, sizeof(struct cart_item_s));
+  cart_item -> name = get_name(n);
+  cart_item -> price = get_price(n);
+  cart_item -> amount = amount;
+  return cart_item;
+}
 
+list* create_new_cart()
+{
+  list* cart = create_new_list(0);
+  linked_list_node * ll_node = create_new_ll(cart);
+  cart -> ll_first = ll_node;
+  cart -> ll_last = ll_node;
+  //connect_cart(cart, ll_node);
+  return cart;
+}
+  
 ware* create_new_ware(char* name, char* description, int price)
 {
   ware* ware = calloc(1, sizeof(struct ware_s));
@@ -97,11 +111,11 @@ ware* create_new_ware(char* name, char* description, int price)
   ware -> price = price;
   return ware;
 }
-list* create_new_list(amount)
+list* create_new_list(int total)
 {
- list *list = calloc(1, sizeof(struct list_s));
+  list *list = calloc(1, sizeof(struct list_s));
   assert(list != NULL);
-  list -> total_amount = amount;
+  list -> total = total;
   return list;
 }
 linked_list_node* create_new_ll(list * list)
@@ -109,8 +123,8 @@ linked_list_node* create_new_ll(list * list)
   linked_list_node *ll_node = calloc(1, sizeof(struct linked_list_node_s));
   assert(ll_node != NULL);
 
-  list -> ll_first = ll_node;
-  list -> ll_last = ll_node;
+  // list -> ll_first = ll_node;
+  // list -> ll_last = ll_node;
   return ll_node;
 }
 shelf* create_new_shelf(char* shelf_name, int amount)
@@ -125,6 +139,8 @@ void connect(node* n, ware* w, list* l, linked_list_node* ll_n, shelf* s)
 {
   n -> n_content = w;
   w -> list = l;
+  l -> ll_first = ll_n;
+  l -> ll_last = ll_n;
   ll_n -> ll_content = s;
 }
 node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
@@ -279,6 +295,8 @@ tree_root* create_new_tree()
 {
   tree_root *tree_root = calloc(1, sizeof(struct tree_root_s));
   tree_root -> top_node = NULL;
+  list * new_cart = create_new_cart();
+  tree_root -> data = new_cart;
   return (tree_root);
 }
 

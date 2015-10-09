@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 
+
 #ifndef TREE_H
 #define TREE_H
 
@@ -18,10 +19,7 @@ typedef struct ware_s ware;
 typedef struct list_s list;
 typedef struct linked_list_node_s linked_list_node;
 typedef struct shelf_s shelf;
-
-//typedef struct cart_s cart;
-
-// #DEFINE ARGS_WARE (char* name, char* description, int price, char* shelf_name, int amount)
+typedef struct cart_item_s cart_item;
 
 void print_tree(node* node);
 
