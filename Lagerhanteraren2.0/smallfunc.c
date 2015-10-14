@@ -1,4 +1,5 @@
 #include "smallfunc.h"
+#include "tree.h"
 
 void strip(char* str);
 void clear(void);
@@ -12,9 +13,18 @@ char* fix_shelf_name(tree_root * tree, char* shelf_name);
 
 char* ask_name()
 {
-  return (ask_str_q("Name:"));
+  return ask_str_q("Name:");
 }
-
+node* ask_item(tree_root *tree)
+{
+  char* name = ask_name();
+  while (! find_node(TreeRoot, name))
+    {
+      //free(name);
+      name = ask_str_q("That item doesn't exists in the warehouse, please choose another one.");
+    }
+  return find_node(TreeRoot, name);
+}
 char* ask_description()
 {
   return (ask_str_q("Description:"));

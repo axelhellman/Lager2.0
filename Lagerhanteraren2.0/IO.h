@@ -28,7 +28,7 @@ bool exit_warehouse();
 
 int ask_int_q(char* question, int low, int high);
 
-//void print_warehouse(warehouse *warehouse_list);
+void print_warehouse_IO(tree_root * tree);
 
 
 #endif /* IO_H */

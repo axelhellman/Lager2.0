@@ -41,33 +41,24 @@ void add_ware_IO(tree_root *tree)
   node* node;
   
   name = ask_name();
-  if (tree_is_empty(tree))
+
+  if (! node_exists(tree, name))
     {
       description = ask_description();
       price = ask_price();
-      shelf_name = ask_shelf_name(tree);
-      num_items = ask_num_items();
     }
-  else
+  else //(node_exists(tree, name))
     {
-      if (node_exists(tree, name))
-	{
-	  node = find_node(get_root(tree), name);
-	  printf("%s is already in the warehouse.\n", name);
-	  description = get_description(node);
-	  price = get_price(node);
-	  print_description(node);
-	  print_price(node);
-	}
-      else
-	{
-	  description = ask_description();
-	  price = ask_price();
-	}
-      shelf_name = ask_shelf_name(tree);
-      num_items = ask_num_items();
+      node = find_node(TreeRoot, name);
+      printf("%s is already in the warehouse.\n", name);
+      description = get_description(node);
+      price = get_price(node);
+      print_description(node);
+      print_price(node);
     }
-
+  shelf_name = ask_shelf_name(tree);
+  num_items = ask_num_items();
+   
   print_line();
 
   print_add_shelf(name, description, price, shelf_name, num_items);
@@ -85,6 +76,7 @@ void add_ware_IO(tree_root *tree)
   else
     {
       insert_or_update(tree, name, description, price, shelf_name, num_items);
+      puts("edit edit edit edit");
       //edit_shelf_IO_aux(tree, name);
     }
 }
@@ -92,21 +84,17 @@ void add_ware_IO(tree_root *tree)
 
 void remove_shelf_IO(tree_root *tree)
 {
-  if(tree_is_empty(tree))
-    {
-      printf("The warehouse is empty!\n");
-      return;
-    }
-  print_tree(get_root(tree));
-  /*
-  shelf* shelf = print_20(warehouse_list, NULL);
-  char ans = 0;
-  int index;
-  int page = 0;
+  int low = 0;
+  int high = 20;
+  int total = total_items(TreeRoot, 0);
+  print_warehouse(tree, 0, 0, 20);
+  char ans;
+  node* item;
+
   
   while (true)
     {
-      if (shelf == NULL)
+      if (total > 20)
 	{
 	  ans = ask_alt("\nWhat would you like to do? [r]emove an item\n [n]ext 20 items\n [e]xit", "rne");
 	}
@@ -116,23 +104,23 @@ void remove_shelf_IO(tree_root *tree)
 	}
       if (ans == 'n')
 	{
-	  page = page +1;
-	  shelf = print_20(warehouse_list, shelf);
+	  low = low + 20;
+	  high = high + 20;
+	  int total = print_tree(TreeRoot, 0, low, high); 
 	}
       else if (ans == 'r')
 	{
-	  index = ask_index(warehouse_list, page);
-	  if (index =! 0)
+	  item = ask_item(tree);
+	    
+	  if (ask_yn("Are you sure you would like to remove this item? y/n"))
 	    {
-	      remove_shelf(warehouse_list, index);
-	      break;
-	    }	  
+	      remove_node(tree, item);
+	      total = total - 1;
+	    }
 	}
-      else
-	{
-	  break;
-	}
-	} */
+      else break;
+    }
+  print_line();
   return;
 }
 
@@ -194,67 +182,52 @@ void edit_shelf_IO_aux(warehouse* warehouse_list, shelf* choosed_shelf)
 
 void edit_shelf_IO(tree_root * tree)
 {
-  // bool continue_edit = true;
+  bool continue_edit = true;
 
-  if(tree_is_empty(tree))
-    {
-      printf("The warehouse is empty!\n");
-      return;
-    }
-  print_tree(TreeRoot);
-    }
-    /*  
+  int low = 0;
+  int high = 20;
+  int total = total_items(TreeRoot, 0);
+  node* item;
+  char answer;
+  printf("\n-------- EDIT AN ITEM --------------\n" );     
+
   while (continue_edit)
     {
-      shelf *shelf = NULL;
-      char answer;
-      int index;
-      int page = 0;
-      printf("\n----- EDIT AN ITEM -----------" );
-      printf("\nItems in warehouse:\n");
-      shelf = print_20(warehouse_list, shelf);
+      print_warehouse(tree, 0 , low, high);
       print_line();
 
-      while(true)
+      if (total < 20)
 	{
-
-	  if (shelf == NULL)
-	    {
-	      answer = ask_alt("\nWhat would you like to do? \n [c]hoose an item to edit\n [s]ee next 20 items (not available)\n [e]xit and go back to main menu", "ce");
-	    }
-	  else
-	    {
-	      answer = ask_alt("\nWhat would you like to do? \n [c]hoose an item to edit\n [s]ee next 20 items\n [e]xit and go back to main menu", "cse");
-	    }
- 
-	
-	  if (answer == 'c')
-	    {
-	      index = ask_index(warehouse_list, page);
-	      if (index == 0) continue;
-	      shelf = get_shelf(warehouse_list, index);
-	      edit_shelf_IO_aux(warehouse_list, shelf);
-	      continue_edit = ask_yn("Edit another item? y/n");
-	    }
-
-	  else if (answer == 's')
-	    {
-	      page = page +1;
-	      shelf = print_20(warehouse_list, shelf);
-	      continue;
-	    }
-
-	  else
-	    {
-	      puts("EXIIIIT");
-	      return;
-	    }
+	  answer = ask_alt("\nWhat would you like to do? \n [c]hoose an item to edit\n [s]ee next 20 items (not available)\n [e]xit and go back to main menu", "ce");
 	}
+      else
+	{
+	  answer = ask_alt("\nWhat would you like to do? \n [c]hoose an item to edit\n [s]ee next 20 items\n [e]xit and go back to main menu", "cse");
+	}
+
+      
+      if (answer == 'c')
+	{
+	  item = ask_item(tree);
+	  puts("Edit edit edit edit");
+	  //edit_item_aux
+	  continue_edit = ask_yn("Edit another item? y/n");
+	}
+      else if (answer == 's')
+	{
+	  low = low + 20;
+	  high = high + 20;
+	  //continue;
+	}
+      else // (answer == 'e')
+	{
+	  print_line();
+	  return;
+	}	
     }  
 }
 
-
-  
+/*
 void undo_action_IO(warehouse* warehouse_list)
 {
   bool answer = ask_yn("Are you sure you would like to undo your last action? y/n");
@@ -274,10 +247,12 @@ bool exit_warehouse()
 
 
 // PRINT FUNCTIONS -----------------------------------
-/*
-void print_warehouse(warehouse *warehouse_list)
+
+void print_warehouse_IO(tree_root* tree)
 {
-  shelf *tmp_shelf = NULL;
+printAll;
+}
+/* shelf *tmp_shelf = NULL;
   shelf *shelf = NULL;
   int index;
   int page = 0;

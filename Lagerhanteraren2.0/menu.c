@@ -20,27 +20,27 @@ void main_menu()
   bool cont = false;
   tree_root * tree = create_new_tree();
   insert_or_update(tree, "Gurka", "grön", 11, "A1", 1);
+  insert_or_update(tree, "Lampa", "skäggig", 1, "K8", 1);
   insert_or_update(tree, "Häst", "fulsfdkj", 34, "K5", 1);
   insert_or_update(tree, "Lars", "grön", 2, "F2", 1);
- 
   insert_or_update(tree, "Berg", "högt", 10000, "G34", 3);
- 
+  insert_or_update(tree, "Igelkott", "högt", 10000, "G33", 3);
   insert_or_update(tree, "Danne", "skäggig", 1, "E2", 1);
   insert_or_update(tree, "Gös", "skäggig", 1, "E3", 1);
   insert_or_update(tree, "Apa", "skäggig", 1, "E4", 1);
- 
-   
-  printtest(find_node(TreeRoot, "Gurka"));
+  insert_or_update(tree, "Iller", "skäggig", 1, "K7", 1);
+  insert_or_update(tree, "Hej hej", "skäggig", 1, "K9", 1);
+  /*
   puts("Tree now");
-  print_tree(TreeRoot);
+  printAll;
 
   puts("removes");
-  remove_node(tree, "Häst");
+  remove_node(tree, find_node(TreeRoot, "Häst"));
   puts("removed");
   puts("New tree");
-  print_tree(TreeRoot);
-
-  
+  printAll;
+  print_line();
+  */
 
   /*
   insert_or_update(tree, "Gurka", "grön", 33, "A3", 3);
@@ -90,11 +90,13 @@ void main_menu()
 	  break;
 
 	case 4:
-	  puts("Undo");//undo_action_IO(warehouse_list);
+	  puts("Undo is not available");//undo_action_IO(warehouse_list);
 	  break;
 
 	case 5:
-	  print_tree(TreeRoot);
+	  print_warehouse_IO(tree);
+
+	  //print_tree(TreeRoot);
 	  break;
 
 	case 6:

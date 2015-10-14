@@ -339,7 +339,12 @@ void insert_new_node(tree_root * tree, node* new_node)
 	    }
 	  crnt_node -> left_node = new_node;
 	  return; 
-	}   
+	}
+      else if (strcmp(name, crnt_node_name) == 0)
+	{
+	  puts("Trying to insert an already existing item");
+	  return;
+	}
     }
 }
 
@@ -370,18 +375,6 @@ tree_root* create_new_tree()
   tree_root -> data = new_cart;
   return (tree_root);
 }
-
-
-void print_tree(node *n) 
- { 
-   if(n)
-     {
-       print_tree (n->left_node);
-       printf("* %s\n", get_name(n)); //TODO kanske
-       print_tree (n->right_node); 
-     }
- }
-
 
 bool shelf_is_taken_aux(list* list, char* shelf_name)
 {
@@ -449,143 +442,70 @@ bool one_child (node *n)
   else return false;
 }
 
-void connect_child_aux(node* prev_node, node *rn, node* next)
+void connect_child(node* prev_node, node *rn, node* child)
 {
    if (prev_node -> right_node == rn)
 	{
-	  prev_node -> right_node = next;//rn -> right_node;
+	  prev_node -> right_node = child;//rn -> right_node;
 	}
       else
 	{
-	  prev_node -> left_node = next; // rn -> right_node;
+	  prev_node -> left_node = child; // rn -> right_node;
 	}
    return;
 }
 
-void connect_child(node* prev_node, node *n)
-{
-  if (n -> left_node == NULL && n -> right_node != NULL)
-    connect_child_aux(prev_node, n, n -> right_node);
+void re_insert_nodes(tree_root *tree, tree_root* tmp_tree)
+{ 
+  if (tmp_tree == NULL) return;
 
-  else if (n -> right_node == NULL && n -> left_node != NULL)
-    connect_child_aux(prev_node, n, n -> left_node);
-
-  return;
+  insert_new_node(tree, tmp_tree -> top_node -> left_node);
+  insert_new_node(tree, tmp_tree -> top_node -> right_node);
 }
-
-void re_insert_aux(tree_root *tree, tree_root *tmp_tree, node* n)
+node* child(node *n)
 {
-  if (n)
-    {
-      re_insert_aux(tree, tmp_tree, n -> left_node);
-      insert_new_node(tree, n);  
-      re_insert_aux(tree, tmp_tree, n -> right_node);    
-    }
+  if (n -> left_node == NULL && n -> right_node != NULL) return (n -> right_node);
+  else if (n -> right_node == NULL && n -> left_node != NULL) return (n -> left_node);
+  else return NULL;
 }
-
-void re_insert_nodes(tree_root *tree, tree_root *tmp_tree, node *tmp_node) { 
-  if (tmp_node == NULL) return;
-  re_insert_aux(tree, tmp_tree, tmp_node->left_node);
-  re_insert_aux(tree, tmp_tree, tmp_node->right_node);
-
-}
-
-void remove_node(tree_root *tree, char* name)
+void remove_node(tree_root *tree, node* rn)
 {
-  node * rn = find_node(TreeRoot, name);
   bool leaf = node_is_leaf(rn);
-  if (TreeRoot == rn && leaf)
-    {
-      //destroy(rn);
-      tree -> top_node = NULL;
-      return;
-    }
-  node* prev_node = find_prev_node(TreeRoot, name);
-
+  node* prev_node = find_prev_node(TreeRoot, get_name(rn));
+  
   if (leaf)
     {
-      puts("destroy rn");
-      //destroy(rn);
-      rn = NULL;
+      if(TreeRoot == rn) tree -> top_node = NULL;
     }
-  if (one_child(rn))
+  else if (one_child(rn))
     {
-      connect_child(prev_node, rn);
-      puts("destroy rn");
-      //destroy(rn);
-      rn = NULL;
+      if (TreeRoot == rn) tree -> top_node = child(rn);
+      else connect_child(prev_node, rn, child(rn));
     }
   else //two_children
     {
-    
       tree_root *tmp_tree = create_new_tree();
       tmp_tree -> top_node = rn;
-      if (prev_node -> right_node == rn) prev_node -> right_node = NULL;
-      else prev_node -> left_node = NULL;
-      puts("tmp_tree");
-      
-      print_tree(tmp_tree -> top_node);
-      puts("innan re_insert");
-      
-      re_insert_nodes(tree, tmp_tree, tmp_tree -> top_node);
-      puts("Tree after remove");
-      //print_tree(TreeRoot);
-      //destroy_tree(tmp_tree);
+
+      if (TreeRoot == rn) tree -> top_node = NULL;
+	
+      else
+	{
+	  if (prev_node -> right_node == rn) prev_node -> right_node = NULL;
+	  else prev_node -> left_node = NULL;
+	}
+      re_insert_nodes(tree, tmp_tree);
     }
+  node* tmp_rn = rn;
+  if (prev_node -> right_node == rn) prev_node -> right_node = NULL;
+  if (prev_node -> left_node == rn) prev_node -> left_node = NULL;
+  //destroy(tmp_rn);
+  puts("Item removed!");
+  
   return;
 }
 
  
-  /*
-    node* remove_node(node *node, char* name) // TODO: Behövs antagligen fler argument
-{
-  node *node = find_node(TreeRoot, name);
-  
-  // base case
-  if (temporary == NULL) printf("non existing\n");
-  
-
-     // En node med ett barn till höger/vänster
-    else
-      {
-if (temporary->left_node == NULL)
- {
-   temporary = node->right_node;
-   free(temporary); //TODO: free(listan m.m)
-   return node;
- }
-else if (temporary->right_node == NULL)
- {
-   temporary = node->left_node;
-   free(temporary); // TODO: lika som ovna
-   return node;
- }
-
-// En node med två löv till v & h
-// temp = minValueNode(->right_node);
-node->name = temporary->name;
-node->right_node = remove_node(node->right_node, temporary->name);
-
-      }
-  return node;
-}
-
-
-node * minValueNode(node* node)
-{
-  node*  = node;
-  
-  // loop down to find the leftmost leaf 
-  while (current->left_node != NULL)
-        current = current->left_node;
-  
-  return current;
-}
-*/
-
-
-
-
 
 
 
@@ -645,18 +565,43 @@ void destroy_tree(tree_root* tree)
 } 
 */
 
-void print_tree2(node *n, int i) 
- { 
+int total_items(node *n, int total)
+{
+  if(n)
+    {
+      total = total_items (n->left_node, total);
+      total = total_items (n->right_node, total);
+      return (total);
+    }
+  return(total+1);
+}
+
+int print_tree(node *n, int i, int low, int high) 
+ {
    if(n)
      {
-       print_tree2 (n->left_node, i);
-       printf("%d. %s\n", i+1, get_name(n)); //TODO kanske
-       i = i+1;
-       print_tree2 (n->right_node, i);
-      
+       i = print_tree (n->left_node, i, low, high);
+       if ((low < i && i <= high) || (low == high))
+	 printf("%d. %s\n", i, get_name(n));
+       i = print_tree (n->right_node, i, low, high);
+       return (i);
      }
+   return(i+1);
  }
 
+void print_warehouse(tree_root *tree, int i, int low, int high)
+{
+   print_line();
+    if(tree_is_empty(tree))
+    {
+      printf("The warehouse is empty!\n");
+      return;
+    }
+  if (i == 0) printf("----- Items in warehouse ------\n");
+
+  print_tree(TreeRoot, i, low, high);
+  
+}
 linked_list_node* get_ll_node(list* l)
 {
   return (l -> ll_first);

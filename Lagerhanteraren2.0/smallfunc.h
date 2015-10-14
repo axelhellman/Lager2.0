@@ -6,10 +6,11 @@
 #include <stdbool.h>
 #include "tree.h"
 
+
 #ifndef SMALLFUNC_H 
 #define SMALLFUNC_H
 
-
+node * ask_item(tree_root *tree); 
 
 //int ask_index(warehouse* warehouse_list, int page);
 
@@ -34,5 +35,7 @@ int ask_price();
 char* ask_shelf_name();
 
 int ask_num_items();
+
+
 
 #endif /* SMALLFUNC_H */
