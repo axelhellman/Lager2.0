@@ -52,7 +52,7 @@ void add_ware_IO(tree_root *tree)
     {
       if (node_exists(tree, name))
 	{
-	  node = find_node(get_root(tree), name);
+	  node = find_node(TreeRoot, name);
 	  printf("%s is already in the warehouse.\n", name);
 	  description = get_description(node);
 	  price = get_price(node);
@@ -97,7 +97,7 @@ void remove_shelf_IO(tree_root *tree)
       printf("The warehouse is empty!\n");
       return;
     }
-  print_tree(get_root(tree));
+  print_tree(TreeRoot);
   /*
   shelf* shelf = print_20(warehouse_list, NULL);
   char ans = 0;

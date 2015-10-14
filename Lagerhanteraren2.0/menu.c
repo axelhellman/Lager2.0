@@ -19,12 +19,55 @@ void main_menu()
 {
   bool cont = false;
   tree_root * tree = create_new_tree();
-  insert_or_update(tree, "Gurka", "grön", 12, "A2", 2);
-  insert_or_update(tree, "Häst", "fulsfdkj", 34, "A5", 1);
-  insert_or_update(tree, "Berg", "högt", 10000, "G34", 3);
+  insert_or_update(tree, "Gurka", "grön", 11, "A1", 1);
+  insert_or_update(tree, "Häst", "fulsfdkj", 34, "K5", 1);
   insert_or_update(tree, "Lars", "grön", 2, "F2", 1);
+ 
+  insert_or_update(tree, "Berg", "högt", 10000, "G34", 3);
+ 
   insert_or_update(tree, "Danne", "skäggig", 1, "E2", 1);
+  insert_or_update(tree, "Gös", "skäggig", 1, "E3", 1);
+  insert_or_update(tree, "Apa", "skäggig", 1, "E4", 1);
+ 
+   
+  printtest(find_node(TreeRoot, "Gurka"));
+  puts("Tree now");
+  print_tree(TreeRoot);
+
+  puts("removes");
+  remove_node(tree, "Häst");
+  puts("removed");
+  puts("New tree");
+  print_tree(TreeRoot);
+
   
+
+  /*
+  insert_or_update(tree, "Gurka", "grön", 33, "A3", 3);
+  insert_or_update(tree, "Gurka", "grön", 66, "A6", 6);
+  insert_or_update(tree, "Gurka", "grön", 44, "A4", 4);
+  insert_or_update(tree, "Gurka", "grön", 55, "A5", 5);
+  insert_or_update(tree, "Gurka", "grön", 22, "A2", 2); */
+    
+  /*
+  puts("shelfs");
+  
+  node* gurknode = find_node(TreeRoot, "Gurka");
+  puts("1");
+  if(gurknode == NULL) puts("gurknode null");
+
+  list* gurklist = get_list(gurknode);
+  puts("2");
+  if(gurklist == NULL) puts("gurklistnull");
+
+  
+  linked_list_node *gurkllnode = get_ll_node(gurklist);
+  puts("3");
+  if(gurkllnode == NULL) puts("gurkllnode null");
+
+
+  print_shelfs(gurkllnode); 
+  puts("end of shelfs"); */
   while (!cont)
     {
       print_main_menu();

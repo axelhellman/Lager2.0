@@ -1,7 +1,7 @@
 #include "tree.h"
 
-list* create_new_list(int amount); //lägg till destructor dest
-linked_list_node* create_new_ll(list* list);
+list* create_new_list (int amount); //lägg till destructor dest
+linked_list_node* create_new_ll();
 
 struct tree_root_s
 {
@@ -73,7 +73,6 @@ char * get_shelf_name(node *node)
 {
   N_Content_eq_Ware;
   shelf * tmp_shelf = ware -> list -> ll_first -> ll_content;
-  // här tror jag att jag gör så att pekaren tmp_shelf pekar på samma sak som pekaren ll_content. Det här känns lite fuskigt?!
   return (tmp_shelf -> shelf_name);
 }
 int get_amount(node *node)
@@ -85,6 +84,25 @@ node* get_root(tree_root *tree)
 {
   return (tree -> top_node);
 }
+list* get_list(node* n)
+{
+  ware *w = n -> n_content;
+  return (w -> list);
+}
+int get_shelf_amount(linked_list_node *crnt_ll_node)
+{
+  shelf* s = crnt_ll_node -> ll_content;
+  int a = s -> amount;
+  return a;
+
+}
+char* get_shelf_name2(linked_list_node *crnt_ll_node)
+{
+  shelf* s = crnt_ll_node -> ll_content;
+  //char* shelf_name = s -> shelf_name;
+  return (s -> shelf_name);
+}
+
 cart_item* add_item_cart(node* n, int amount) 
 {
   cart_item* cart_item = calloc(1, sizeof(struct cart_item_s));
@@ -122,31 +140,21 @@ list* create_new_list(int total) //lägg till destructor dest
   //list -> free_content = dest;
   return list;
 }
-linked_list_node* create_new_ll(list * list)
+linked_list_node* create_new_ll()
 {
   linked_list_node *ll_node = calloc(1, sizeof(struct linked_list_node_s));
   assert(ll_node != NULL);
-
-  // list -> ll_first = ll_node;
-  // list -> ll_last = ll_node;
   return ll_node;
 }
 shelf* create_new_shelf(char* shelf_name, int amount)
 {
- shelf *shelf = calloc(1, sizeof(struct shelf_s));
+  shelf *shelf = calloc(1, sizeof(struct shelf_s));
   assert(shelf != NULL);
   shelf -> shelf_name = shelf_name;
   shelf -> amount = amount;
   return shelf;
 }
-void connect(node* n, ware* w, list* l, linked_list_node* ll_n, shelf* s)
-{
-  n -> n_content = w;
-  w -> list = l;
-  l -> ll_first = ll_n;
-  l -> ll_last = ll_n;
-  ll_n -> ll_content = s;
-}
+
 node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
 {
   node *node = calloc(1, sizeof(struct node_s));
@@ -154,10 +162,15 @@ node * create_new_node(char* name, char* description, int price, char* shelf_nam
   node -> key = name;
 
   ware* ware = create_new_ware(name, description, price);
+  node -> n_content = ware;
   list* list = create_new_list(amount); //lägg till &destroy_shelf
-  linked_list_node * ll_node = create_new_ll(list);
-  shelf * shelf = create_new_shelf(shelf_name, price);
-  connect(node, ware, list, ll_node, shelf);
+  ware -> list = list;
+  linked_list_node * ll_node = create_new_ll();
+ 
+  list -> ll_first = ll_node;
+  list -> ll_last = ll_node;
+  shelf * shelf = create_new_shelf(shelf_name, amount);
+  ll_node -> ll_content = shelf;
   
   return node;
 }
@@ -189,31 +202,6 @@ void balance_tree(node* node)
   puts("lala");
 }
 
-/*
-void remove_node(node* node, char* name, list * list, shelf_node * shelf_node)
- )
-{
-  node *temp = find_node(node, name);
-
-  if (temp == NULL) return temp;
-
-  
-  else if (temp == node)
-    {
-      
-      free(shelf_node);
-      free(list);
-      free(temp);
-	//Fall då det enbart finns en vara på en hyllplats
-    }
-
-  else
-    {
-      //Fall då det finns fler än en vara på olika hyllor
-    }
-  
-} */
-
 
 bool node_exists(tree_root* tree, char* name)
 {
@@ -221,9 +209,84 @@ bool node_exists(tree_root* tree, char* name)
   return false;
 }
 
+void printtest(node* n)
+{
+  int amount = get_shelf_amount(get_ll_node(get_list(n)));
+  printf("=====\tTEST\t=====\n");
+  printf(" Name\t\t\t%s\n", get_name(n));
+  printf(" Description\t\t%s\n", get_description(n));
+  printf(" Price\t\t\t%d\n", get_price(n));
+  printf(" Shelf number\t\t%s\n", get_shelf_name(n));
+  printf(" Number of items\t%d\n", amount);
+  printf("=====\t\t\t=====\n\n");
+}
+void insert_shelf(list *list, shelf *new_shelf)
+{
+  linked_list_node *new_node = create_new_ll();
+  new_node -> ll_content = new_shelf;
+  int amount = new_shelf -> amount;
+  list -> total = list -> total + amount;
+  printf("New total: %d", list -> total);
+  linked_list_node *prev_node = NULL;
+ 
+  linked_list_node *crnt_node = list -> ll_first;
+
+  while (true)
+    {
+      if (crnt_node == NULL)
+	{
+	  prev_node -> next_node = new_node;
+	  return;
+	}
+            
+      int crnt_amount = get_shelf_amount(crnt_node);
+      // int crnt_amount = ((shelf*) crnt_node -> ll_content) -> amount;
+ 
+      if (crnt_amount <  amount && prev_node == NULL)
+	{
+	  list -> ll_first = new_node;
+	  new_node -> next_node = crnt_node;
+	  break;
+	}
+      else if (crnt_amount <  amount)
+	{
+	  prev_node -> next_node = new_node;
+	  new_node -> next_node = crnt_node;
+	  break;
+	}
+      else if (crnt_amount > amount)
+	{
+	  prev_node = crnt_node;
+	  crnt_node = crnt_node -> next_node;
+	}
+      
+      else
+	{
+	  puts("something is wrong");
+	  break;
+	}
+    }
+}
+
+void print_shelfs(linked_list_node *crnt_ll_node)
+{
+  if (crnt_ll_node == NULL)
+    {
+      puts("crnt_ll_node är null, finns inga hyllor att printa");
+      return;
+    }
+ 
+  char *name = get_shelf_name2(crnt_ll_node);
+  int amount = get_shelf_amount(crnt_ll_node);
+
+  printf("\nShelf: %s \tAmount: %d", name, amount);
+  print_shelfs(crnt_ll_node -> next_node);
+}
 void update_node(node* node, char* shelf_name, int amount)
 {
-  puts("hej");
+  shelf *new_shelf = create_new_shelf(shelf_name, amount);
+  list* l = get_list(node);
+  insert_shelf(l, new_shelf);  
 }
 
 void insert_or_update(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount)
@@ -231,7 +294,8 @@ void insert_or_update(tree_root* tree, char* name, char* description, int price,
   node * node = find_node(tree -> top_node, name);
   if (node == NULL)
     {
-      insert_new_node(tree, name, description, price, shelf_name, amount);
+      node = create_new_node(name, description, price, shelf_name, amount);
+      insert_new_node(tree, node);
       return;
     }
   else // find_node == any node
@@ -242,22 +306,20 @@ void insert_or_update(tree_root* tree, char* name, char* description, int price,
 }
 
 
-void insert_new_node(tree_root * tree, char* name, char* description, int price, char* shelf_name, int amount) // TODO: ta med trädet?
-{
-  node* new_node = create_new_node(name, description, price, shelf_name, amount);
-  print_tree(new_node);
-  
+void insert_new_node(tree_root * tree, node* new_node)
+{  
   if (tree_is_empty(tree))
     {
       tree -> top_node = new_node;
       return;
     }
   node* crnt_node = tree -> top_node;
+  char* name = get_name(new_node);
 
   while (true)
     {
       char* crnt_node_name = get_name(crnt_node);  
-
+      
       if (strcmp(name, crnt_node_name) > 0)
 	{
 	  if (crnt_node -> right_node != NULL)
@@ -277,11 +339,16 @@ void insert_new_node(tree_root * tree, char* name, char* description, int price,
 	    }
 	  crnt_node -> left_node = new_node;
 	  return; 
-	}
-      
+	}   
     }
 }
 
+
+bool node_is_leaf(node* n)
+{
+  if (n->right_node == NULL && n->left_node == NULL) return true;
+  else return false;
+}
 
 bool tree_is_empty(tree_root *tree)
 {
@@ -310,14 +377,167 @@ void print_tree(node *n)
    if(n)
      {
        print_tree (n->left_node);
-       printf("-%s\n", get_name(n)); //TODO kanske
-       print_tree (n->right_node);
-      
+       printf("* %s\n", get_name(n)); //TODO kanske
+       print_tree (n->right_node); 
      }
  }
 
-/*
-node* remove_node(node *node, char* name) // TODO: Behövs antagligen fler argument
+
+bool shelf_is_taken_aux(list* list, char* shelf_name)
+{
+  for (linked_list_node *current_node = list -> ll_first; current_node != NULL; current_node = current_node->next_node)
+    {
+      shelf* crnt_shelf = current_node -> ll_content;
+    
+      char* crnt_name = calloc(128, sizeof(char)); //crnt_shelf -> shelf_name;
+      strcpy(crnt_name, crnt_shelf -> shelf_name);
+
+      if(strcmp(crnt_name, shelf_name) == 0)
+	{
+	  free(crnt_name);
+	  return true;
+	}
+      free(crnt_name);
+    }
+  return false;
+}
+
+bool shelf_is_taken(node* node, char* shelf_name)
+{
+  bool taken = false;
+  ware* w = node -> n_content;
+  if(node != NULL)
+    {
+      if (node -> left_node)
+	{
+	  bool taken_left = shelf_is_taken(node -> left_node, shelf_name);
+	  if (taken_left) return true;
+	}
+
+      taken = shelf_is_taken_aux(w -> list, shelf_name);
+      if (taken) return true;
+
+      if (node -> right_node)
+	{
+	  bool taken_right = shelf_is_taken(node -> right_node, shelf_name);
+	  if (taken_right) return true;
+	}
+    }
+  return taken;
+}
+
+node* find_prev_node(node *node, char* name)
+{
+  char* crnt_node_name = get_name(node);
+  
+  if (node -> right_node == find_node(node, name)) return node;
+  if (node -> left_node == find_node(node, name)) return node;
+
+  if (strcmp(name, crnt_node_name) > 0)
+    {
+      return find_prev_node(node -> right_node, name);
+    }
+  else //(strcmp(name, crnt_node_name) < 0)
+    {
+      return find_prev_node(node -> left_node, name); 
+    }
+}
+bool one_child (node *n)
+{
+  if (n -> left_node == NULL && n -> right_node != NULL) return true;
+  else if (n -> right_node == NULL && n -> left_node != NULL) return true;
+  else return false;
+}
+
+void connect_child_aux(node* prev_node, node *rn, node* next)
+{
+   if (prev_node -> right_node == rn)
+	{
+	  prev_node -> right_node = next;//rn -> right_node;
+	}
+      else
+	{
+	  prev_node -> left_node = next; // rn -> right_node;
+	}
+   return;
+}
+
+void connect_child(node* prev_node, node *n)
+{
+  if (n -> left_node == NULL && n -> right_node != NULL)
+    connect_child_aux(prev_node, n, n -> right_node);
+
+  else if (n -> right_node == NULL && n -> left_node != NULL)
+    connect_child_aux(prev_node, n, n -> left_node);
+
+  return;
+}
+
+void re_insert_aux(tree_root *tree, tree_root *tmp_tree, node* n)
+{
+  if (n)
+    {
+      re_insert_aux(tree, tmp_tree, n -> left_node);
+      insert_new_node(tree, n);  
+      re_insert_aux(tree, tmp_tree, n -> right_node);    
+    }
+}
+
+void re_insert_nodes(tree_root *tree, tree_root *tmp_tree, node *tmp_node) { 
+  if (tmp_node == NULL) return;
+  re_insert_aux(tree, tmp_tree, tmp_node->left_node);
+  re_insert_aux(tree, tmp_tree, tmp_node->right_node);
+
+}
+
+void remove_node(tree_root *tree, char* name)
+{
+  node * rn = find_node(TreeRoot, name);
+  bool leaf = node_is_leaf(rn);
+  if (TreeRoot == rn && leaf)
+    {
+      //destroy(rn);
+      tree -> top_node = NULL;
+      return;
+    }
+  node* prev_node = find_prev_node(TreeRoot, name);
+
+  if (leaf)
+    {
+      puts("destroy rn");
+      //destroy(rn);
+      rn = NULL;
+    }
+  if (one_child(rn))
+    {
+      connect_child(prev_node, rn);
+      puts("destroy rn");
+      //destroy(rn);
+      rn = NULL;
+    }
+  else //two_children
+    {
+    
+      tree_root *tmp_tree = create_new_tree();
+      tmp_tree -> top_node = rn;
+      if (prev_node -> right_node == rn) prev_node -> right_node = NULL;
+      else prev_node -> left_node = NULL;
+      puts("tmp_tree");
+      
+      print_tree(tmp_tree -> top_node);
+      puts("innan re_insert");
+      
+      re_insert_nodes(tree, tmp_tree, tmp_tree -> top_node);
+      puts("Tree after remove");
+      //print_tree(TreeRoot);
+      //destroy_tree(tmp_tree);
+    }
+  return;
+}
+
+ 
+  /*
+    node* remove_node(node *node, char* name) // TODO: Behövs antagligen fler argument
 {
   node *node = find_node(TreeRoot, name);
   
@@ -368,14 +588,6 @@ node * minValueNode(node* node)
 
 
 
-
-
-
-
-
-
-// remove node
-// 
 
 
 /*
@@ -433,15 +645,56 @@ void destroy_tree(tree_root* tree)
 } 
 */
 
-/*
- int main (void)
- {
-   printf("Hej hej");
-   print_tree(tree -> top_node);
-   printf("hej igen");
-   insert_or_update(tree, "Gurka", "Grön och skön", 12, "A23", 2);
-
-   list* l = create_new_list(0, destroy_shelf);
-   
+void print_tree2(node *n, int i) 
+ { 
+   if(n)
+     {
+       print_tree2 (n->left_node, i);
+       printf("%d. %s\n", i+1, get_name(n)); //TODO kanske
+       i = i+1;
+       print_tree2 (n->right_node, i);
+      
+     }
  }
+
+linked_list_node* get_ll_node(list* l)
+{
+  return (l -> ll_first);
+}
+/*
+int main (void)
+{
+  printf("Hej hej");
+  tree_root* tree = create_new_tree();
+  print_tree(tree -> top_node);
+  printf("hej igen");
+  insert_or_update(tree, "Gurka", "Grön och skön", 12, "A23", 2);
+  insert_or_update(tree, "Häst", "fulsfdkj", 34, "A5", 1);
+  insert_or_update(tree, "Berg", "högt", 10000, "G34", 3);
+  insert_or_update(tree, "Lars", "grön", 2, "F2", 1);
+  insert_or_update(tree, "Danne", "skäggig", 1, "E2", 1);
+  insert_or_update(tree, "Gös", "skäggig", 1, "E2", 1);
+  insert_or_update(tree, "Apa", "skäggig", 1, "E2", 1);
+  puts("print_tree");
+  print_tree(TreeRoot);
+  puts("print_tree2");
+  print_tree2(tree -> top_node, 0);
+
+  node * n = TreeRoot;
+  if(!n) puts("n null");
+  
+  if (shelf_is_taken(n, "A7"))
+    {
+      printf("shelf is taken/occupied");
+    }
+  else
+    {
+      printf("shelf free");
+    }
+  print_shelfs(get_list(find_node(TreeRoot, "Gurka")) -> ll_first);
+  // list* l = create_new_list(0, destroy_shelf);
+  
+}
+
 */
+

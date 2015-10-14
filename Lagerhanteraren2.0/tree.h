@@ -30,11 +30,11 @@ void destroy_tree(tree_root* tree); //argument?
 // skickar in ett namn på en vara och trädet. Returnerar true om varan redan finns. Annars returernar den false
 bool node_exists(tree_root* tree, char* name);
 
-void insert_new_node(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount);
+void insert_new_node(tree_root* tree, node* node);
   
 bool tree_is_empty(tree_root* tree);
 
-void insert_or_update(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount);
+void insert_or_update(tree_root* tree, ArgsWare);
   
 node * find_node(node* node, char* name);
 
@@ -46,6 +46,13 @@ int get_price(node *node);
 char * get_shelf_name(node *node);
 int get_amount(node *node);
 node* get_root(tree_root *tree);
+list *get_list (node * n);
+
+bool shelf_is_taken(node* node, char* shelf_name);
+void print_shelfs(linked_list_node * ll_node);
+linked_list_node* get_ll_node(list* l);
+void printtest(node* n);
+void remove_node(tree_root *tree, char* name);
 
 
 #endif /* TREE_H */
