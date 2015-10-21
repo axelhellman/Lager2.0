@@ -13,6 +13,8 @@
 #define ArgsWare char* name, char* description, int price, char* shelf_name, int amount
 #define N_Content_eq_Ware ware* ware = node -> n_content
 #define printAll print_tree(TreeRoot, 0, 0 ,0)
+#define WithNumbers true
+#define WithoutNumbers false
 
 typedef struct tree_root_s tree_root;
 typedef struct node_s node;
@@ -55,7 +57,9 @@ void printtest(node* n);
 void remove_node(tree_root *tree, node* n);
 int print_tree(node *n, int i, int low, int high);
 void print_line();
-void print_warehouse(tree_root *tree, int i, int low, int high);
+void print_warehouse(tree_root *tree, int low, int high);
 int total_items(node* n, int i);
+void shelf_names(linked_list_node* ll_node);
 
+void change_name(tree_root *tree, node *n, char *new_name);
 #endif /* TREE_H */

@@ -10,6 +10,8 @@
 #ifndef SMALLFUNC_H 
 #define SMALLFUNC_H
 
+#define AskName ask_str_q("Name:")
+
 node * ask_item(tree_root *tree); 
 
 //int ask_index(warehouse* warehouse_list, int page);
@@ -26,7 +28,7 @@ char ask_alt(char* question, char* alternatives);
 
 void print_line(void);
 
-char* ask_name();
+//char* ask_name();
 
 char* ask_description();
 
@@ -34,7 +36,7 @@ int ask_price();
 
 char* ask_shelf_name();
 
-int ask_num_items();
+int ask_amount();
 
 
 

@@ -10,17 +10,18 @@
 #ifndef IO_H 
 #define IO_H
 
+#define ItemsPerPage 8
 
 //funktioner som menu kallar på
 
 void add_ware_IO(tree_root * tree);
 
-void remove_shelf_IO(tree_root * tree);
+void remove_item_IO(tree_root * tree);
 
 void add_item_to_cart_IO();
 
 
-void edit_shelf_IO(tree_root * tree);
+void edit_item_IO(tree_root * tree);
 /*
 void undo_action_IO(warehouse * warehouse_list); */
 
@@ -28,8 +29,8 @@ bool exit_warehouse();
 
 int ask_int_q(char* question, int low, int high);
 
-void print_warehouse_IO(tree_root * tree);
+void show_warehouse_IO(tree_root * tree);
 
-
+void print_shelf_names(node *node, bool numbers);
 #endif /* IO_H */
 

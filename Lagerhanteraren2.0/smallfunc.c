@@ -1,6 +1,7 @@
 #include "smallfunc.h"
 #include "tree.h"
 
+
 void strip(char* str);
 void clear(void);
 bool check_shelf_ans(char* answer);
@@ -10,18 +11,27 @@ bool only_digits(char* answer);
 char* fix_shelf_name(tree_root * tree, char* shelf_name);
 // void lower_letter(char* answer, int i);
 
-
+/*
 char* ask_name()
 {
-  return ask_str_q("Name:");
-}
+  char* name = ask_str_q(question);
+  while(find_node(TreeRoot, name))
+    {
+      name = ask_str_q(question);
+      question = "That item already exists in the warehouse, please choose another name.";
+      return name;
+    }
+    } */
+
 node* ask_item(tree_root *tree)
 {
-  char* name = ask_name();
+  char* question = "Name:";
+  char* name = ask_str_q(question);
   while (! find_node(TreeRoot, name))
     {
       //free(name);
-      name = ask_str_q("That item doesn't exists in the warehouse, please choose another one.");
+      question = "That item doesn't exists in the warehouse, please choose another one.";
+      name = ask_str_q(question);
     }
   return find_node(TreeRoot, name);
 }
@@ -38,39 +48,16 @@ int ask_price()
 char* ask_shelf_name(tree_root* tree)
 {
   char* shelf_name = ask_str_q("Shelf number:");
-  char* shelf_name2 = fix_shelf_name(tree, shelf_name);
-  free(shelf_name);
-  return shelf_name2;
+  shelf_name = fix_shelf_name(tree, shelf_name);
+  //free(shelf_name);
+  return shelf_name;
 }
 
-int ask_num_items()
+int ask_amount()
 {
   return (ask_int_q("Number of items:", 1, 99999999));
 
 }
-/*
-int ask_index(warehouse* warehouse_list, int page)
-{
-  int answer;
-  int index;
-  shelf* shelf;
-  answer = ask_int_q ("Choose an item. Answer with a number between 1-20. Press 0 to exit.", 0, 20);
-
-  while (true)
-    {
-      index = page * 20 + answer - 1;
-      shelf = get_shelf(warehouse_list, index);
-      while (shelf == NULL)
-	{
-	  answer = ask_int_q("Item doesn't exist, please choose another item. Press 0 to exit.", 0, 20);
-	  index = page * 20 + answer - 1;
-	  shelf = get_shelf (warehouse_list, index);
-	}
-      break;
-    }
-  return index;
-}
-*/
 
 char* ask_str_q (char *question)
 {
@@ -238,17 +225,11 @@ bool check_shelf_ans(char* answer)
 {
   if (isalpha(answer[0]))
     {
-      if (answer[1]== '\0')
-	{
-	  return false;
-	}
+      if (answer[1]== '\0') return false;
   
       for (int i=1; i<strlen(answer); ++i)
 	{
-	  if (!(isdigit(answer[i])))
-	    {
-	      return false;
-	    }
+	  if (!(isdigit(answer[i]))) return false;
 	}
       return true;
     }

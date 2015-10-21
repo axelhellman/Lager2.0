@@ -14,7 +14,11 @@ void print_main_menu()
   puts("0. Exit program");
   
 }
-
+void test(char** name)
+{
+  *name = "<3Tobbe";
+  return;
+}
 void main_menu()
 {
   bool cont = false;
@@ -30,7 +34,23 @@ void main_menu()
   insert_or_update(tree, "Apa", "skäggig", 1, "E4", 1);
   insert_or_update(tree, "Iller", "skäggig", 1, "K7", 1);
   insert_or_update(tree, "Hej hej", "skäggig", 1, "K9", 1);
+
+  insert_or_update(tree, "Gurka", "grön", 33, "A3", 3);
+  insert_or_update(tree, "Gurka", "grön", 66, "A6", 6);
+  insert_or_update(tree, "Gurka", "grön", 44, "A4", 4);
+  insert_or_update(tree, "Gurka", "grön", 55, "A5", 5);
+  insert_or_update(tree, "Gurka", "grön", 22, "A2", 2);
+  
   /*
+  char** name = calloc(10, sizeof(char));
+  *name = "Karro";
+  printf("%s", *name);
+  test(name);
+  printf("%s\n\n", *name);
+
+  //  free(*name);
+  free(name);
+  */
   puts("Tree now");
   printAll;
 
@@ -40,34 +60,11 @@ void main_menu()
   puts("New tree");
   printAll;
   print_line();
-  */
-
-  /*
-  insert_or_update(tree, "Gurka", "grön", 33, "A3", 3);
-  insert_or_update(tree, "Gurka", "grön", 66, "A6", 6);
-  insert_or_update(tree, "Gurka", "grön", 44, "A4", 4);
-  insert_or_update(tree, "Gurka", "grön", 55, "A5", 5);
-  insert_or_update(tree, "Gurka", "grön", 22, "A2", 2); */
-    
-  /*
-  puts("shelfs");
   
-  node* gurknode = find_node(TreeRoot, "Gurka");
-  puts("1");
-  if(gurknode == NULL) puts("gurknode null");
-
-  list* gurklist = get_list(gurknode);
-  puts("2");
-  if(gurklist == NULL) puts("gurklistnull");
-
-  
-  linked_list_node *gurkllnode = get_ll_node(gurklist);
-  puts("3");
-  if(gurkllnode == NULL) puts("gurkllnode null");
-
-
-  print_shelfs(gurkllnode); 
-  puts("end of shelfs"); */
+  puts("shelves");
+  print_shelf_names(find_node(TreeRoot, "Gurka"), WithoutNumbers);
+  puts("end of shelves");
+ 
   while (!cont)
     {
       print_main_menu();
@@ -82,21 +79,19 @@ void main_menu()
 	  break;
 
 	case 2:
-	  remove_shelf_IO(tree);
+	  remove_item_IO(tree);
 	  break;
 
 	case 3:
-	  edit_shelf_IO(tree);
+	  edit_item_IO(tree);
 	  break;
 
 	case 4:
-	  puts("Undo is not available");//undo_action_IO(warehouse_list);
+	  puts("Undo is not available");
 	  break;
 
 	case 5:
-	  print_warehouse_IO(tree);
-
-	  //print_tree(TreeRoot);
+	  show_warehouse_IO(tree);
 	  break;
 
 	case 6:
@@ -112,5 +107,5 @@ void main_menu()
 	}
     }
   printf("destroys tree");
-  //destroy_tree(tree);
+  //destroy_tree(tree); 
 }
