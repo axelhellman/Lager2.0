@@ -6,6 +6,7 @@
 
 #include "tree.h"
 #include "smallfunc.h"
+#include "list.h"
 
 #ifndef IO_H 
 #define IO_H

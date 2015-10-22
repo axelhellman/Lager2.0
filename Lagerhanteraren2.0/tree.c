@@ -1,7 +1,9 @@
 #include "tree.h"
+#ifdef LIST_H
+#include "list.h"
+#endif /* LIST_H */
 
-list * create_new_list (int amount); //lägg till destructor dest
-linked_list_node * create_new_ll();
+
 node* separate_node(tree_root *tree, node* rn);
 
 struct root_s
@@ -15,12 +17,15 @@ struct tree_root_s
   node *top_node; //tree är top-node
 };
 
+typedef void(*destructor)(void*);
+
 struct node_s
 {
   char* key;
   void *n_content;
   node *left_node;
-  node *right_node; 
+  node *right_node;
+  // destructor free_content;
 };
 
 struct ware_s
@@ -31,67 +36,17 @@ struct ware_s
   list *list;
 };
 
-typedef void(*destructor)(void*);
-
-struct list_s
-{
-  int total;
-  // destructor free_content;
-  linked_list_node *ll_first;
-  linked_list_node *ll_last;
-};
-
-struct linked_list_node_s
-{
-  void* ll_content;
-  linked_list_node* next_node;
-};
-
-struct shelf_s
-{
-  char* shelf_name;
-  int amount;
-};
-
 struct cart_item_s
 {
-    char* name;
-    int price;
-    int amount;
-    int total_price;
-  };
+  char* name; //behövs egentligen inte
+  int price; //behövs inte
+  int amount;
+  int total_price;
+};
+//---------------------------------------------------
+//---------------------------------------------------
+//---------------------------------------------------
 
-char * get_name(node *node)
-{
-  return (node -> key);
-}
-char * get_description(node *node)
-{
-  N_Content_eq_Ware;
-  return (ware -> description);
-}
-int get_price(node *node)
-{
-  N_Content_eq_Ware;
-  return (ware -> price);
-}
-char * get_shelf_name(node *node)
-{
-  N_Content_eq_Ware;
-  shelf * tmp_shelf = ware -> list -> ll_first -> ll_content;
-  return (tmp_shelf -> shelf_name);
-}
-char* get_shelf_name2(linked_list_node *crnt_ll_node)
-{
-  shelf* s = crnt_ll_node -> ll_content;
-  return (s -> shelf_name);
-}
-
-int get_amount(node* node)
-{
-  N_Content_eq_Ware;
-  return (ware -> list -> total);
-}
 tree_root* get_warehouse(root* root)
 {
   return (root -> warehouse);
@@ -104,38 +59,54 @@ node* get_topnode(tree_root* tree)
 {
   return (tree -> top_node);
 }
-list* get_list(node* n)
-{
-  ware *w = n -> n_content;
-  return (w -> list);
-}
-int get_shelf_amount(linked_list_node *crnt_ll_node)
-{
-  shelf* s = crnt_ll_node -> ll_content;
-  int a = s -> amount;
-  return a;
+//---------------------------------------------------
+//---------------------------------------------------
+//---------------------------------------------------
 
+node* getLeft(node* node)
+{
+  return (node -> left_node);
 }
 
-cart_item* add_item_cart(node* n, int amount) 
+node* getRight(node* node)
 {
-  cart_item* cart_item = calloc(1, sizeof(struct cart_item_s));
-  cart_item -> name = strdup(get_name(n));
-  cart_item -> price = get_price(n);
-  cart_item -> amount = amount;
-  return cart_item;
+  return (node -> right_node);
 }
-/*
-list* create_new_cart()
+
+
+
+
+
+
+
+//---------------------------------------------------
+//---------------------------------------------------
+//---------------------------------------------------
+
+char * get_name(node *node)
 {
-  list* cart = create_new_list(0); //lägg till &destroy_cart_item
-  linked_list_node * ll_node = create_new_ll(cart);
-  cart -> ll_first = ll_node;
-  cart -> ll_last = ll_node;
-  //connect_cart(cart, ll_node);
-  return cart;
-  } */
+  return (node -> key);
+}
+char * get_description(node *node)
+{
+  return (((ware*) node -> n_content) -> description);
+}
+int get_price(node *node) //endast wh
+{
+  return (((ware*) node -> n_content) -> price);
+}
+
+void* get_list(node* n) //endast wh
+{
   
+  return (((ware*)n -> n_content) -> list);
+}
+//---------------------------------------------------
+//---------------------------------------------------
+//---------------------------------------------------
+
+
+
 ware* create_new_ware(char* name, char* description, int price)
 {
   ware* ware = calloc(1, sizeof(struct ware_s));
@@ -146,28 +117,8 @@ ware* create_new_ware(char* name, char* description, int price)
   ware -> price = price;
   return ware;
 }
-list* create_new_list(int total) //lägg till destructor dest
-{
-  list *list = calloc(1, sizeof(struct list_s));
-  assert(list != NULL);
-  list -> total = total;
-  //list -> free_content = dest;
-  return list;
-}
-linked_list_node* create_new_ll()
-{
-  linked_list_node *ll_node = calloc(1, sizeof(struct linked_list_node_s));
-  assert(ll_node != NULL);
-  return ll_node;
-}
-shelf* create_new_shelf(char* shelf_name, int amount)
-{
-  shelf *shelf = calloc(1, sizeof(struct shelf_s));
-  assert(shelf != NULL);
-  shelf -> shelf_name = shelf_name;
-  shelf -> amount = amount;
-  return shelf;
-}
+
+
 // gör en funktion som heter Create_new_content
 node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
 {
@@ -177,15 +128,13 @@ node * create_new_node(char* name, char* description, int price, char* shelf_nam
 
   ware* ware = create_new_ware(name, description, price);
   node -> n_content = ware;
-  list* list = create_new_list(amount); //lägg till &destroy_shelf
-  ware -> list = list;
-  linked_list_node * ll_node = create_new_ll();
- 
-  list -> ll_first = ll_node;
-  list -> ll_last = ll_node;
+
   shelf * shelf = create_new_shelf(shelf_name, amount);
-  ll_node -> ll_content = shelf;
-  
+  linked_list_node * ll_node = create_new_ll(shelf);
+  list* list = create_new_list(amount, ll_node); //lägg till &destroy_shelf
+
+  ware -> list = list;
+ 
   return node;
 }
 
@@ -233,62 +182,6 @@ bool node_exists(tree_root* tree, char* name)
 {
   if (find_node(Top(tree), name) != NULL) return true;
   return false;
-}
-
-
-void insert_shelf(list *list, shelf *new_shelf)
-{
-  linked_list_node *new_node = create_new_ll();
-  new_node -> ll_content = new_shelf;
-  int amount = new_shelf -> amount;
-  list -> total = list -> total + amount;
-  printf("New total: %d", list -> total);
-  linked_list_node *prev_node = NULL;
- 
-  linked_list_node *crnt_node = list -> ll_first;
-
-  while (true)
-    {
-      if (crnt_node == NULL)
-	{
-	  prev_node -> next_node = new_node;
-	  return;
-	}
-            
-      int crnt_amount = get_shelf_amount(crnt_node);
- 
-      if (crnt_amount <  amount && prev_node == NULL)
-	{
-	  list -> ll_first = new_node;
-	  new_node -> next_node = crnt_node;
-	  break;
-	}
-      else if (crnt_amount <  amount)
-	{
-	  prev_node -> next_node = new_node;
-	  new_node -> next_node = crnt_node;
-	  break;
-	}
-      else if (crnt_amount > amount)
-	{
-	  prev_node = crnt_node;
-	  crnt_node = crnt_node -> next_node;
-	}
-      
-      else
-	{
-	  puts("something is wrong");
-	  break;
-	}
-    }
-}
-
-void update_node(node* node, char* shelf_name, int amount)
-//denna ska absolut göras om. Den är bra att ha när vi testar men behövs inte egentligen tror jag
-{
-  shelf *new_shelf = create_new_shelf(shelf_name, amount);
-  list* l = get_list(node);
-  insert_shelf(l, new_shelf);  
 }
 
 void insert_or_update(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount)
@@ -364,50 +257,6 @@ bool tree_is_empty(tree_root *tree)
 }
 
 
-
-bool shelf_is_taken_aux(list* list, char* shelf_name)
-{
-  for (linked_list_node *current_node = list -> ll_first; current_node != NULL; current_node = current_node->next_node)
-    {
-      shelf* crnt_shelf = current_node -> ll_content;
-    
-      char* crnt_name = calloc(128, sizeof(char)); //crnt_shelf -> shelf_name;
-      strcpy(crnt_name, crnt_shelf -> shelf_name);
-
-      if(strcmp(crnt_name, shelf_name) == 0)
-	{
-	  free(crnt_name);
-	  return true;
-	}
-      free(crnt_name);
-    }
-  return false;
-}
-
-bool shelf_is_taken(node* node, char* shelf_name)
-{
-  bool taken = false;
-  ware* w = node -> n_content;
-  if(node != NULL)
-    {
-      if (node -> left_node)
-	{
-	  bool taken_left = shelf_is_taken(node -> left_node, shelf_name);
-	  if (taken_left) return true;
-	}
-
-      taken = shelf_is_taken_aux(w -> list, shelf_name);
-      if (taken) return true;
-
-      if (node -> right_node)
-	{
-	  bool taken_right = shelf_is_taken(node -> right_node, shelf_name);
-	  if (taken_right) return true;
-	}
-    }
-  return taken;
-}
-
 node* find_prev_node(tree_root* tree, node* n, char* name)
 {
   node* tmp_node = find_node(Top(tree), name);
@@ -432,11 +281,12 @@ node* find_prev_node(tree_root* tree, node* n, char* name)
       return NULL;
     }
 }
-bool one_child (node *n)
+
+node* child(node* n)
 {
-  if (n -> left_node == NULL && n -> right_node != NULL) return true;
-  else if (n -> right_node == NULL && n -> left_node != NULL) return true;
-  else return false;
+  if (n -> left_node == NULL && n -> right_node != NULL) return (n -> right_node);
+  else if (n -> right_node == NULL && n -> left_node != NULL) return (n -> left_node);
+  else return NULL;
 }
 
 void connect_child(node* prev_node, node* n, node* child)
@@ -457,12 +307,7 @@ void re_insert_nodes(tree_root* tree, tree_root* tmp_tree)
   insert_new_node(tree, tmp_tree -> top_node -> left_node);
   insert_new_node(tree, tmp_tree -> top_node -> right_node);
 }
-node* child(node* n)
-{
-  if (n -> left_node == NULL && n -> right_node != NULL) return (n -> right_node);
-  else if (n -> right_node == NULL && n -> left_node != NULL) return (n -> left_node);
-  else return NULL;
-}
+
 void remove_node(root* root, node* n)
 {
   n = separate_node(Warehouse, n);
@@ -504,7 +349,7 @@ node* separate_node(tree_root* tree, node* rn)
       if (prev_node -> right_node == rn) prev_node -> right_node = NULL; 
       if (prev_node -> left_node == rn) prev_node -> left_node = NULL;
     }
-  else if (one_child(rn))
+  else if (child(rn)) //node has one child
     {
       if (Top(tree) == rn) tree -> top_node  = child(rn);
       else connect_child(prev_node, rn, child(rn));
@@ -590,6 +435,8 @@ void destroy_tree(tree_root* tree)
   destroy_cart(cart* c);
 } 
 */
+
+/*
 void shelf_names(linked_list_node *crnt_ll_node)
 {
   if (crnt_ll_node == NULL) return;
@@ -613,7 +460,7 @@ void print_shelfs(linked_list_node *crnt_ll_node)
 
   printf("\nShelf: %s \tAmount: %d", name, amount);
   print_shelfs(crnt_ll_node -> next_node);
-}
+  } */
 int total_items(node *n, int total)
 {
   if(n)
@@ -650,10 +497,7 @@ void print_warehouse(tree_root *tree, int low, int high)
   print_tree(Top(tree), 0, low, high);
   
 }
-linked_list_node* get_ll_node(list* l)
-{
-  return (l -> ll_first);
-}
+
 /*
 int main (void)
 {
