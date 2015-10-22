@@ -9,13 +9,18 @@
 #ifndef TREE_H
 #define TREE_H
 
-#define TreeRoot get_root(tree)
+#define Warehouse get_warehouse(root)
+#define Cart get_cart(root)
+#define Top(tree) get_topnode(tree)
+
 #define ArgsWare char* name, char* description, int price, char* shelf_name, int amount
-#define N_Content_eq_Ware ware* ware = node -> n_content
-#define printAll print_tree(TreeRoot, 0, 0 ,0)
+
+#define N_Content_eq_Ware ware* ware = node -> n_content //fult!! 
+#define printAll(tree) print_tree(Top(tree), 0, 0 ,0)
 #define WithNumbers true
 #define WithoutNumbers false
 
+typedef struct root_s root;
 typedef struct tree_root_s tree_root;
 typedef struct node_s node;
 typedef struct ware_s ware;
@@ -24,6 +29,8 @@ typedef struct linked_list_node_s linked_list_node;
 typedef struct shelf_s shelf;
 typedef struct cart_item_s cart_item;
 
+tree_root* get_warehouse(root* root);
+tree_root* get_cart(root* root);
 
 node * create_new_node(ArgsWare);
 
@@ -47,19 +54,21 @@ char * get_description(node *node);
 int get_price(node *node);
 char * get_shelf_name(node *node);
 int get_amount(node *node);
-node* get_root(tree_root *tree);
+node* get_topnode(tree_root *tree);
 list *get_list (node * n);
 
 bool shelf_is_taken(node* node, char* shelf_name);
 void print_shelfs(linked_list_node * ll_node);
 linked_list_node* get_ll_node(list* l);
 void printtest(node* n);
-void remove_node(tree_root *tree, node* n);
+void remove_node(root *root, node* n);
 int print_tree(node *n, int i, int low, int high);
 void print_line();
 void print_warehouse(tree_root *tree, int low, int high);
 int total_items(node* n, int i);
 void shelf_names(linked_list_node* ll_node);
 
-void change_name(tree_root *tree, node *n, char *new_name);
+root* create_new_root();
+
+void change_name(root *root, node *n, char *new_name);
 #endif /* TREE_H */

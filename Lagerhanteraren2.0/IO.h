@@ -13,15 +13,16 @@
 #define ItemsPerPage 8
 
 //funktioner som menu kallar på
+ 
 
-void add_ware_IO(tree_root * tree);
+void add_ware_IO(root* root);
 
-void remove_item_IO(tree_root * tree);
+void remove_item_IO(root* root);
 
 void add_item_to_cart_IO();
 
 
-void edit_item_IO(tree_root * tree);
+void edit_item_IO(root* root);
 /*
 void undo_action_IO(warehouse * warehouse_list); */
 

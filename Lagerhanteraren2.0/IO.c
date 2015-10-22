@@ -8,7 +8,7 @@ void print_shelf_name(node *node, bool number);
 void print_amount(node *node, bool number);
 void print_box(node* n, bool numbers);
 
-void edit_item_IO_aux(tree_root *tree, node* n);
+void edit_item_IO_aux(root* root, node* n);
 
 void add_item_to_cart_IO()
 {
@@ -17,7 +17,7 @@ void add_item_to_cart_IO()
   printf("Your choice: %c", answer);
 }
 
-void add_ware_IO(tree_root *tree)
+void add_ware_IO(root *root)
 {
   puts("\n----- ADD AN ITEM --------------------");
   char* name;
@@ -31,7 +31,7 @@ void add_ware_IO(tree_root *tree)
   while(true)
     {
       name = AskName;
-      if (node_exists(tree, name))
+      if (node_exists(Warehouse, name))
 	{
 	  printf("\nThat item already exists. What would you like to do?\n");
 	  ans = ask_alt(" [e]dit existing item\n [c]hoose another name", "ec");
@@ -40,7 +40,7 @@ void add_ware_IO(tree_root *tree)
       
       if (ans == 'e')
 	{
-	  edit_item_IO_aux(tree, find_node(TreeRoot, name));
+	  edit_item_IO_aux(root, find_node(Top(Warehouse), name));
 	  return;
 	}
       //else  (ans == 'c') continue; 
@@ -48,13 +48,13 @@ void add_ware_IO(tree_root *tree)
   
   description = ask_description();
   price = ask_price();
-  shelf_name = ask_shelf_name(tree);
+  shelf_name = ask_shelf_name(Warehouse);
   amount = ask_amount();
   
   print_line();
-  insert_or_update(tree, name, description, price, shelf_name, amount);
+  insert_or_update(Warehouse, name, description, price, shelf_name, amount);
 
-  node = find_node(TreeRoot, name);
+  node = find_node(Top(Warehouse), name);
   printf("\n\tYour new item:");
   print_box(node, WithoutNumbers);
 
@@ -65,28 +65,28 @@ void add_ware_IO(tree_root *tree)
     }
   else if (ans == 'd')
     {
-      remove_node(tree, node);
+      remove_node(root, node);
       puts("Item NOT added");
     }
   else
     {
       puts("edit edit edit edit");
-      edit_item_IO_aux(tree, find_node(TreeRoot, name));
+      edit_item_IO_aux(root, find_node(Top(Warehouse), name));
     }
 }
 
 
-void remove_item_IO(tree_root *tree)
+void remove_item_IO(root *root)
 {
   int low = 0;
   int high = ItemsPerPage;
-  int total = total_items(TreeRoot, 0);
+  int total = total_items(Top(Warehouse), 0);
   char ans;
   node* item;
 
   while (true)
     {
-      print_warehouse(tree, low, high);
+      print_warehouse(Warehouse, low, high);
       if (total > high)
 	{
 	  ans = ask_alt("\nWhat would you like to do?\n [r]emove an item\n [n]ext page\n [e]xit", "rne");
@@ -102,11 +102,11 @@ void remove_item_IO(tree_root *tree)
 	}
       else if (ans == 'r')
 	{
-	  item = ask_item(tree);
+	  item = ask_item(Warehouse);
 	    
 	  if (ask_yn("Are you sure you would like to remove this item? y/n"))
 	    {
-	      remove_node(tree, item);
+	      remove_node(root, item);
 	      total = total - 1;
 	    }
 	  low = 0;
@@ -118,28 +118,28 @@ void remove_item_IO(tree_root *tree)
   return;
 }
 
-node* edit_name_IO(tree_root* tree, node* item)
+node* edit_name_IO(root* root, node* item)
 {
  print_name(item, WithoutNumbers);
  // char* old_name = get_name(item);
  char *new_name = AskName;
- while (node_exists(tree, new_name))
+ while (node_exists(Warehouse, new_name))
    {
      printf("\nThat item already exists, choose another name.");
      new_name = AskName;
    }
- change_name(tree, item, new_name);
+ change_name(root, item, new_name);
  puts("Name updated!");
  return item;
 }
 
-void edit_item_IO_aux(tree_root* tree, node* item) 
+void edit_item_IO_aux(root* root, node* item) 
 {
    puts("\n----- EDIT ITEM -------------");
    print_box(item, WithNumbers);
    puts("Waht would you like to edit???????");
    puts("hmmm okay lets change the name");
-   edit_name_IO(tree, item);
+   edit_name_IO(root, item);
    /* 
   bool cont_edit = true;
 
@@ -173,20 +173,20 @@ void edit_item_IO_aux(tree_root* tree, node* item)
 }
 
 
-void edit_item_IO(tree_root * tree)
+void edit_item_IO(root * root)
 {
   bool continue_edit = true;
 
   int low = 0;
   int high = ItemsPerPage;
-  int total = total_items(TreeRoot, 0);
+  int total = total_items(Top(Warehouse), 0);
   node* item;
   char answer;
   printf("\n-------- EDIT AN ITEM --------------\n" );     
 
   while (continue_edit)
     {
-      print_warehouse(tree, low, high);
+      print_warehouse(Warehouse, low, high);
       print_line();
 
       if (total < high)
@@ -201,9 +201,9 @@ void edit_item_IO(tree_root * tree)
       
       if (answer == 'c')
 	{
-	  item = ask_item(tree);
+	  item = ask_item(Warehouse);
 	  puts("Edit edit edit edit");
-	  edit_item_IO_aux(tree, item);
+	  edit_item_IO_aux(root, item);
 	  low = 0;
 	  high = ItemsPerPage;
 	  continue_edit = ask_yn("Edit another item? y/n");
@@ -222,22 +222,13 @@ void edit_item_IO(tree_root * tree)
 }
 
 
-bool exit_warehouse()
-{
-  bool ans = ask_yn("Are you sure you would like to exit the warehouse? y/n");
-  return ans;
-}
-
-
-// PRINT FUNCTIONS -----------------------------------
-
 void show_warehouse_IO(tree_root* tree)
 {
   int low = 0;
   int high = ItemsPerPage;
  
   char answer;
-  int total = total_items(TreeRoot, 0);
+  int total = total_items(Top(tree), 0);
   while(true)
     {
       print_warehouse(tree, low, high);
@@ -265,6 +256,16 @@ void show_warehouse_IO(tree_root* tree)
       else break;
     }
 }
+
+bool exit_warehouse()
+{
+  bool ans = ask_yn("Are you sure you would like to exit the warehouse? y/n");
+  return ans;
+}
+
+// PRINT FUNCTIONS -----------------------------------
+
+
 /*
 void print_cart(tree* tree, cart* cart)
 {

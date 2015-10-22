@@ -22,24 +22,25 @@ void test(char** name)
 void main_menu()
 {
   bool cont = false;
-  tree_root * tree = create_new_tree();
-  insert_or_update(tree, "Gurka", "grön", 11, "A1", 1);
-  insert_or_update(tree, "Lampa", "skäggig", 1, "K8", 1);
-  insert_or_update(tree, "Häst", "fulsfdkj", 34, "K5", 1);
-  insert_or_update(tree, "Lars", "grön", 2, "F2", 1);
-  insert_or_update(tree, "Berg", "högt", 10000, "G34", 3);
-  insert_or_update(tree, "Igelkott", "högt", 10000, "G33", 3);
-  insert_or_update(tree, "Danne", "skäggig", 1, "E2", 1);
-  insert_or_update(tree, "Gös", "skäggig", 1, "E3", 1);
-  insert_or_update(tree, "Apa", "skäggig", 1, "E4", 1);
-  insert_or_update(tree, "Iller", "skäggig", 1, "K7", 1);
-  insert_or_update(tree, "Hej hej", "skäggig", 1, "K9", 1);
+  root* root = create_new_root();
+  //Warehouse_root * warehouse = create_new_Warehouse();
+  insert_or_update(Warehouse, "Gurka", "grön", 11, "A1", 1);
+  insert_or_update(Warehouse, "Lampa", "skäggig", 1, "K8", 1);
+  insert_or_update(Warehouse, "Häst", "fulsfdkj", 34, "K5", 1);
+  insert_or_update(Warehouse, "Lars", "grön", 2, "F2", 1);
+  insert_or_update(Warehouse, "Berg", "högt", 10000, "G34", 3);
+  insert_or_update(Warehouse, "Igelkott", "högt", 10000, "G33", 3);
+  insert_or_update(Warehouse, "Danne", "skäggig", 1, "E2", 1);
+  insert_or_update(Warehouse, "Gös", "skäggig", 1, "E3", 1);
+  insert_or_update(Warehouse, "Apa", "skäggig", 1, "E4", 1);
+  insert_or_update(Warehouse, "Iller", "skäggig", 1, "K7", 1);
+  insert_or_update(Warehouse, "Hej hej", "skäggig", 1, "K9", 1);
 
-  insert_or_update(tree, "Gurka", "grön", 33, "A3", 3);
-  insert_or_update(tree, "Gurka", "grön", 66, "A6", 6);
-  insert_or_update(tree, "Gurka", "grön", 44, "A4", 4);
-  insert_or_update(tree, "Gurka", "grön", 55, "A5", 5);
-  insert_or_update(tree, "Gurka", "grön", 22, "A2", 2);
+  insert_or_update(Warehouse, "Gurka", "grön", 33, "A3", 3);
+  insert_or_update(Warehouse, "Gurka", "grön", 66, "A6", 6);
+  insert_or_update(Warehouse, "Gurka", "grön", 44, "A4", 4);
+  insert_or_update(Warehouse, "Gurka", "grön", 55, "A5", 5);
+  insert_or_update(Warehouse, "Gurka", "grön", 22, "A2", 2);
   
   /*
   char** name = calloc(10, sizeof(char));
@@ -51,18 +52,18 @@ void main_menu()
   //  free(*name);
   free(name);
   */
-  puts("Tree now");
-  printAll;
+  puts("Warehouse now");
+  printAll(Warehouse);
 
   puts("removes");
-  remove_node(tree, find_node(TreeRoot, "Häst"));
+  remove_node(root, find_node(Top(Warehouse), "Häst"));
   puts("removed");
-  puts("New tree");
-  printAll;
+  puts("New Warehouse");
+  printAll(Warehouse);
   print_line();
   
   puts("shelves");
-  print_shelf_names(find_node(TreeRoot, "Gurka"), WithoutNumbers);
+  print_shelf_names(find_node(Top(Warehouse), "Gurka"), WithoutNumbers);
   puts("end of shelves");
  
   while (!cont)
@@ -75,15 +76,15 @@ void main_menu()
       switch (answer)
 	{
 	case 1:
-	  add_ware_IO(tree);
+	  add_ware_IO(root);
 	  break;
 
 	case 2:
-	  remove_item_IO(tree);
+	  remove_item_IO(root);
 	  break;
 
 	case 3:
-	  edit_item_IO(tree);
+	  edit_item_IO(root);
 	  break;
 
 	case 4:
@@ -91,7 +92,7 @@ void main_menu()
 	  break;
 
 	case 5:
-	  show_warehouse_IO(tree);
+	  show_warehouse_IO(Warehouse);
 	  break;
 
 	case 6:
@@ -106,6 +107,6 @@ void main_menu()
 	default: puts ("defaaaaauuuuuult");	    
 	}
     }
-  printf("destroys tree");
-  //destroy_tree(tree); 
+  printf("destroys Warehouse");
+  //destroy_Warehouse(Warehouse); 
 }

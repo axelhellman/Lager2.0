@@ -15,7 +15,7 @@ char* fix_shelf_name(tree_root * tree, char* shelf_name);
 char* ask_name()
 {
   char* name = ask_str_q(question);
-  while(find_node(TreeRoot, name))
+  while(find_node(Top(tree), name))
     {
       name = ask_str_q(question);
       question = "That item already exists in the warehouse, please choose another name.";
@@ -27,13 +27,13 @@ node* ask_item(tree_root *tree)
 {
   char* question = "Name:";
   char* name = ask_str_q(question);
-  while (! find_node(TreeRoot, name))
+  while (! find_node(Top(tree), name))
     {
       //free(name);
       question = "That item doesn't exists in the warehouse, please choose another one.";
       name = ask_str_q(question);
     }
-  return find_node(TreeRoot, name);
+  return find_node(Top(tree), name);
 }
 char* ask_description()
 {
@@ -175,7 +175,7 @@ char* fix_shelf_name(tree_root *tree, char* shelf_name)
 	}
       shelf_name[0] = toupper(shelf_name[0]);
   
-      if (shelf_is_taken(TreeRoot, shelf_name))
+      if (shelf_is_taken(Top(tree), shelf_name))
 	{  
 	  shelf_name = ask_str_q("That shelf is already taken. Please choose another shelf.");
 	}
