@@ -21,26 +21,40 @@ void test(char** name)
 }
 void main_menu()
 {
+ 
   bool cont = false;
   root* root = create_new_root();
   //Warehouse_root * warehouse = create_new_Warehouse();
-  insert_or_update(Warehouse, "Gurka", "grön", 11, "A1", 1);
-  insert_or_update(Warehouse, "Lampa", "skäggig", 1, "K8", 1);
-  insert_or_update(Warehouse, "Häst", "fulsfdkj", 34, "K5", 1);
-  insert_or_update(Warehouse, "Lars", "grön", 2, "F2", 1);
-  insert_or_update(Warehouse, "Berg", "högt", 10000, "G34", 3);
-  insert_or_update(Warehouse, "Igelkott", "högt", 10000, "G33", 3);
-  insert_or_update(Warehouse, "Danne", "skäggig", 1, "E2", 1);
-  insert_or_update(Warehouse, "Gös", "skäggig", 1, "E3", 1);
-  insert_or_update(Warehouse, "Apa", "skäggig", 1, "E4", 1);
-  insert_or_update(Warehouse, "Iller", "skäggig", 1, "K7", 1);
-  insert_or_update(Warehouse, "Hej hej", "skäggig", 1, "K9", 1);
+  insert_new_node(Warehouse, "Gurka", "grön", 11, "A11", 11);
+  insert_new_node(Warehouse, "Lampa", "skäggig", 1, "K8", 1);
+  insert_new_node(Warehouse, "Häst", "fulsfdkj", 34, "K5", 1);
+  insert_new_node(Warehouse, "Lars", "grön", 2, "F2", 1);
+  insert_new_node(Warehouse, "Berg", "högt", 10000, "G34", 3);
+  insert_new_node(Warehouse, "Igelkott", "högt", 10000, "G33", 3);
+  insert_new_node(Warehouse, "Danne", "skäggig", 1, "E2", 1);
+  insert_new_node(Warehouse, "Gös", "skäggig", 1, "E3", 1);
+  insert_new_node(Warehouse, "Apa", "skäggig", 1, "E4", 1);
+  insert_new_node(Warehouse, "Iller", "skäggig", 1, "K7", 1);
+  insert_new_node(Warehouse, "Hej hej", "skäggig", 1, "K9", 1);
 
-  insert_or_update(Warehouse, "Gurka", "grön", 33, "A3", 3);
-  insert_or_update(Warehouse, "Gurka", "grön", 66, "A6", 6);
-  insert_or_update(Warehouse, "Gurka", "grön", 44, "A4", 4);
-  insert_or_update(Warehouse, "Gurka", "grön", 55, "A5", 5);
-  insert_or_update(Warehouse, "Gurka", "grön", 22, "A2", 2);
+  node* gurka = find_node(Top(Warehouse), "Gurka");
+  add_shelf(gurka, "A5", 5);
+  add_shelf(gurka, "A3", 3);
+  add_shelf(gurka, "A6", 6);
+  add_shelf(gurka, "A4", 4);
+  add_shelf(gurka, "A5", 5);
+  add_shelf(gurka, "A2", 2);
+  add_shelf(gurka, "A5", 5);
+   
+
+  puts("shelves");
+  print_shelf_names(gurka, WithoutNumbers);
+  print_line();
+  
+  change_shelf_name(gurka, get_shelf(gurka, "A4"), "L45");
+  puts("shelves after changing name");
+  print_shelf_names(gurka, WithoutNumbers);
+  print_line(); 
   
   /*
   char** name = calloc(10, sizeof(char));
@@ -52,19 +66,18 @@ void main_menu()
   //  free(*name);
   free(name);
   */
+  
   puts("Warehouse now");
-  printAll(Warehouse);
+  printWarehouse();
 
   puts("removes");
   remove_node(root, find_node(Top(Warehouse), "Häst"));
   puts("removed");
   puts("New Warehouse");
-  printAll(Warehouse);
+  printWarehouse();
   print_line();
   
-  puts("shelves");
-  print_shelf_names(find_node(Top(Warehouse), "Gurka"), WithoutNumbers);
-  puts("end of shelves");
+
  
   while (!cont)
     {
@@ -92,11 +105,11 @@ void main_menu()
 	  break;
 
 	case 5:
-	  show_warehouse_IO(Warehouse);
+	  show_warehouse_IO(root, Warehouse);
 	  break;
 
 	case 6:
-	  add_item_to_cart_IO();
+	  add_item_to_cart_IO(root);
 	  break;
 
 	case 0:
@@ -107,6 +120,6 @@ void main_menu()
 	default: puts ("defaaaaauuuuuult");	    
 	}
     }
-  printf("destroys Warehouse");
+    printf("destroys Warehouse"); 
   //destroy_Warehouse(Warehouse); 
 }

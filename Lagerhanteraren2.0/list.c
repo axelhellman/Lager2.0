@@ -3,6 +3,9 @@
 #include "tree.h"
 #endif /* TREE_H */
 
+void destroy_shelf(void* s);
+void destroy_llnode(linked_list_node* ll_node);
+
 struct list_s
 {
   int total;
@@ -54,11 +57,48 @@ int get_shelf_amount(linked_list_node *crnt_ll_node)
   return a;
 }
 
-linked_list_node* get_ll_node(list* l)
+linked_list_node* get_first(list* l)
 {
   return (l -> ll_first);
 }
 
+shelf* get_shelf(node* n, char* shelf_name)
+{
+  list* l = get_list(n);
+  linked_list_node* crnt_llnode;
+  
+  for (crnt_llnode = get_first(l); crnt_llnode != NULL; crnt_llnode = crnt_llnode -> next_node)
+    {
+      shelf* crnt_shelf = crnt_llnode -> ll_content;
+      char* crnt_name = get_shelf_name2(crnt_llnode);
+
+      if (strcmp(crnt_name, shelf_name) == 0) return crnt_shelf;
+    }
+  return NULL;
+}
+/*
+shelf* next_shelf(shelf* s)
+{
+
+} */
+linked_list_node* get_prev_node(node* n, shelf* s)
+{
+  list* l = get_list(n);
+  linked_list_node* crnt_node = l -> ll_first;
+  if (crnt_node -> next_node == NULL) return NULL;
+  
+  shelf* next_shelf = crnt_node -> next_node -> ll_content;
+  while (crnt_node != NULL) {
+    if (next_shelf == s)
+      return crnt_node;
+    else
+      {
+	crnt_node = crnt_node -> next_node;
+	next_shelf = crnt_node -> next_node -> ll_content;
+      }
+  }
+  return NULL;
+}
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------
@@ -93,23 +133,55 @@ shelf* create_new_shelf(char* shelf_name, int amount)
 //---------------------------------------------------
 //---------------------------------------------------
 
+void remove_shelf(node* n, shelf* shelf)
+{
+  puts("in remove");
+  list* l = get_list(n);
+  linked_list_node* prev = get_prev_node(n, shelf);
+  linked_list_node* remove;
+  if (prev == NULL)
+    {
+      remove = l -> ll_first;
+      l -> ll_first = remove -> next_node;
+    }
+  else
+    { remove = prev -> next_node;
+      linked_list_node* next = remove -> next_node;
+      prev -> next_node = next;
+    }
+  l -> total = l -> total - get_shelf_amount(remove);
+  puts("removed");
+  //free(shelf);
+  destroy_shelf(shelf);
+}
 
+void change_shelf_name(node* n, shelf* shelf, char* new_name)
+{
+  shelf -> shelf_name = new_name;
+}
 void insert_shelf(list *list, shelf *new_shelf)
 {
   linked_list_node *new_node = create_new_ll(new_shelf);
   int amount = new_shelf -> amount;
   list -> total = list -> total + amount;
-  printf("New total: %d", list -> total);
-  linked_list_node *prev_node = NULL;
- 
-  linked_list_node *crnt_node = list -> ll_first;
+  printf("New total: %d\n", list -> total); //ta bort sen
 
+  linked_list_node *prev_node = NULL;
+  linked_list_node *crnt_node = list -> ll_first;
+  if (crnt_node == NULL)
+    {
+      crnt_node = new_node;
+      list -> ll_last = new_node;
+      return;
+    }
+  
   while (true)
     {
       if (crnt_node == NULL)
 	{
 	  prev_node -> next_node = new_node;
-	  return;
+	  list -> ll_last = new_node;
+	  break;
 	}
             
       int crnt_amount = get_shelf_amount(crnt_node);
@@ -118,42 +190,54 @@ void insert_shelf(list *list, shelf *new_shelf)
 	{
 	  list -> ll_first = new_node;
 	  new_node -> next_node = crnt_node;
-	  break;
 	}
-      else if (crnt_amount <  amount)
+      else if (crnt_amount <  amount || crnt_amount == amount)
 	{
 	  prev_node -> next_node = new_node;
 	  new_node -> next_node = crnt_node;
-	  break;
 	}
       else if (crnt_amount > amount)
 	{
 	  prev_node = crnt_node;
 	  crnt_node = crnt_node -> next_node;
-	}
-      
+	  continue;
+	}      
       else
 	{
 	  puts("something is wrong");
-	  break;
 	}
+      break;
     }
 }
 
 
-void update_node(node* node, char* shelf_name, int amount)
-//denna ska absolut göras om. Den är bra att ha när vi testar men behövs inte egentligen tror jag
+void add_shelf(node* node, char* shelf_name, int new_amount)
 {
-  shelf *new_shelf = create_new_shelf(shelf_name, amount);
+  shelf* s = get_shelf(node, shelf_name);
+  if (s)
+    {
+      new_amount = new_amount + s -> amount;
+      puts("ska snart remova");
+      remove_shelf(node, get_shelf(node, shelf_name));
+    }
+  
+  shelf* new_shelf = create_new_shelf(shelf_name, new_amount);
   list* l = get_list(node);
-  insert_shelf(l, new_shelf);  
+  insert_shelf(l, new_shelf);
+  return;
 }
 
-
+bool node_has_shelf(node* n, char* shelf_name)
+{
+  list* list = get_list(n);
+  return (shelf_is_taken_list(list, shelf_name));
+}
 
 
 bool shelf_is_taken_list(list* list, char* shelf_name)
 {
+  if (shelf_name == NULL) return false;
+
   for (linked_list_node *current_node = list -> ll_first; current_node != NULL; current_node = current_node->next_node)
     {
       shelf* crnt_shelf = current_node -> ll_content;
@@ -220,3 +304,33 @@ void print_shelfs(linked_list_node *crnt_ll_node)
   printf("\nShelf: %s \tAmount: %d", name, amount);
   print_shelfs(crnt_ll_node -> next_node);
   }
+
+//---------------------------------------------------
+//---------------------------------------------------
+//---------------------------------------------------
+
+void destroy_shelf(void* s)
+{
+  shelf* shelf = s;
+  //free(shelf -> shelf_name);
+  free(shelf);
+}
+void destroy_llnode(linked_list_node* ll_node)
+{
+  destroy_shelf(ll_node -> ll_content);
+  ll_node -> ll_content = NULL; //är detta onödigt?
+  ll_node -> next_node = NULL;
+  //free(ll_node);
+}
+void destroy_list(list* l)
+{
+  linked_list_node* ll_node = l -> ll_first;
+  linked_list_node* tmp_ll_node = NULL;
+  while (ll_node != NULL)
+    {
+      tmp_ll_node = ll_node;
+      ll_node = ll_node -> next_node;
+      destroy_llnode(tmp_ll_node);
+    } 
+  free(l);
+}

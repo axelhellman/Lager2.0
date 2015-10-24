@@ -17,7 +17,9 @@ typedef struct shelf_s shelf;
 int get_amount(node* node);
 char* get_shelf_name2(linked_list_node *crnt_ll_node);
 int get_shelf_amount(linked_list_node *crnt_ll_node);
-linked_list_node* get_ll_node(list* l);
+linked_list_node* get_first(list* l);
+shelf* get_shelf(node* n, char* shelf_name);
+void change_shelf_name(node* n, shelf* shelf, char* newname);
 
 //---------------------------------------------------
 //---------------------------------------------------
@@ -34,9 +36,10 @@ shelf* create_new_shelf(char* shelf_name, int amount);
 
 void insert_shelf(list *list, shelf *new_shelf);
 
-void update_node(node* node, char* shelf_name, int amount);
-//denna ska absolut göras om. Den är bra att ha när vi testar men behövs inte egentligen tror jag
+void add_shelf(node* node, char* shelf_name, int amount);
 
+
+bool node_has_shelf(node* node, char* shelf_name);
 bool shelf_is_taken_list(list* list, char* shelf_name);
 bool shelf_is_taken(node* node, char* shelf_name);
 void shelf_names(linked_list_node *crnt_ll_node);

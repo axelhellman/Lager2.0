@@ -24,8 +24,6 @@ bool ask_yn(char* question);
 
 char ask_alt(char* question, char* alternatives);
 
-//char* fix_shelf_num(warehouse* warehouse_list, char* shelf_num);
-
 void print_line(void);
 
 //char* ask_name();
@@ -34,7 +32,9 @@ char* ask_description();
 
 int ask_price();
 
-char* ask_shelf_name();
+char* ask_shelf_name(tree_root *tree, node* n);
+
+void* ask_shelf(tree_root* tree, node* n);
 
 int ask_amount();
 

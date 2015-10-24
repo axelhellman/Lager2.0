@@ -16,13 +16,11 @@
 #define Warehouse get_warehouse(root)
 #define Cart get_cart(root)
 #define Top(tree) get_topnode(tree)
-//#define Left(node) getLeft(node)
-//#define Righ(node) getRight(node)
-
 
 #define ArgsWare char* name, char* description, int price, char* shelf_name, int amount
 
-#define printAll(tree) print_tree(Top(tree), 0, 0 ,0)
+#define printWarehouse() print_tree(root, Warehouse, 0 ,0)
+#define printCart() print_tree(root, Cart, 0, 0)
 #define WithNumbers true
 #define WithoutNumbers false
 
@@ -30,9 +28,6 @@ typedef struct root_s root;
 typedef struct tree_root_s tree_root;
 typedef struct node_s node;
 typedef struct ware_s ware;
-//typedef struct list_s list;
-//typedef struct linked_list_node_s linked_list_node;
-//typedef struct shelf_s shelf;
 typedef struct cart_item_s cart_item;
 
 tree_root* get_warehouse(root* root);
@@ -45,11 +40,11 @@ void destroy_tree(tree_root* tree); //argument?
 // skickar in ett namn på en vara och trädet. Returnerar true om varan redan finns. Annars returernar den false
 bool node_exists(tree_root* tree, char* name);
 
-void insert_new_node(tree_root* tree, node* node);
+void insert_node(tree_root* tree, node* node);
   
 bool tree_is_empty(tree_root* tree);
 
-void insert_or_update(tree_root* tree, ArgsWare);
+void insert_new_node(tree_root* tree, ArgsWare);
   
 node * find_node(node* node, char* name);
 
@@ -58,29 +53,23 @@ tree_root * create_new_tree();
 char * get_name(node *node);
 char * get_description(node *node);
 int get_price(node *node);
-//char * get_shelf_name(node *node);
-//int get_amount(node *node);
 node* get_topnode(tree_root *tree);
 
 void* get_list(node * n);
 
-//bool shelf_is_taken(node* node, char* shelf_name);
-//void print_shelfs(linked_list_node * ll_node);
-//linked_list_node* get_ll_node(list* l);
-
 void printtest(node* n);
 void remove_node(root *root, node* n);
-int print_tree(node *n, int i, int low, int high);
+int print_tree_aux(node *n, int i, int low, int high);
 void print_line();
-void print_warehouse(tree_root *tree, int low, int high);
+void print_tree(root* root, tree_root* tree, int low, int high);
 
 int total_items(node* n, int i);
-
-//void shelf_names(linked_list_node* ll_node);
 
 root* create_new_root();
 
 void change_name(root *root, node *n, char *new_name);
+void change_description(node* n, char* new_description);
+void change_price(root* root, node* n, int new_price);
 
 node* getLeft(node* node);
 node* getRight(node* node);

@@ -10,11 +10,23 @@ void print_box(node* n, bool numbers);
 
 void edit_item_IO_aux(root* root, node* n);
 
-void add_item_to_cart_IO()
+void add_item_to_cart_IO(root* root)
 {
-  // print_cart(); //not_implemented
-  char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [n]ext page\n [e]xit", "cne");
-  printf("Your choice: %c", answer);
+  printCart();
+  printWarehouse();
+bool add_more;
+  char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [e]xit", "ce");
+  if (answer == 'e') add_more = false;
+  else add_more = true;
+
+  while (add_more)
+    {
+      node* n = ask_item(Warehouse);
+      print_name(n, WithoutNumbers);
+      print_amount(n, WithoutNumbers);
+      int to_cart = ask_int_q("How many would you like add to cart?", 1, get_amount(n));
+
+    }
 }
 
 void add_ware_IO(root *root)
@@ -48,11 +60,11 @@ void add_ware_IO(root *root)
   
   description = ask_description();
   price = ask_price();
-  shelf_name = ask_shelf_name(Warehouse);
+  shelf_name = ask_shelf_name(Warehouse, NULL);
   amount = ask_amount();
   
   print_line();
-  insert_or_update(Warehouse, name, description, price, shelf_name, amount);
+  insert_new_node(Warehouse, name, description, price, shelf_name, amount);
 
   node = find_node(Top(Warehouse), name);
   printf("\n\tYour new item:");
@@ -86,14 +98,14 @@ void remove_item_IO(root *root)
 
   while (true)
     {
-      print_warehouse(Warehouse, low, high);
-      if (total > high)
+      print_tree(root, Warehouse, low, high);
+      if (total <= high)
 	{
-	  ans = ask_alt("\nWhat would you like to do?\n [r]emove an item\n [n]ext page\n [e]xit", "rne");
+	  ans = ask_alt("\nWhat would you like to do?\n [r]emove an item\n [e]xit", "re");
 	}
       else
 	{
-	  ans = ask_alt("\nWhat would you like to do?\n [r]emove an item\n [e]xit", "re");
+	  ans = ask_alt("\nWhat would you like to do?\n [r]emove an item\n [n]ext page\n [e]xit", "rne");
 	}
       if (ans == 'n')
 	{
@@ -121,7 +133,6 @@ void remove_item_IO(root *root)
 node* edit_name_IO(root* root, node* item)
 {
  print_name(item, WithoutNumbers);
- // char* old_name = get_name(item);
  char *new_name = AskName;
  while (node_exists(Warehouse, new_name))
    {
@@ -133,43 +144,76 @@ node* edit_name_IO(root* root, node* item)
  return item;
 }
 
+node* edit_description_IO(root* root, node* item)
+{
+  char* new_description = ask_description(item);
+  change_description(item, new_description);
+  puts("Description updated");
+  return item;
+}
+
+node* edit_price_IO(root* root, node* item)
+{
+  int new_price = ask_price();
+  change_price(root, item, new_price);
+  return item;
+}
+node* edit_shelfname_IO(root* root, node* item)
+{
+  print_shelf_names(item, WithoutNumbers);
+  char* new_shelf_name = NULL;
+  char ans = ask_alt("[e]dit a shelfname // [a]dd an new shelf // [r]emove a shelf", "ear");
+  if (ans == 'e')
+    {
+      shelf* shelf = ask_shelf(Warehouse, item);
+      new_shelf_name = ask_shelf_name(Warehouse, item);
+      change_shelf_name(item, shelf, new_shelf_name);	
+    }
+  else if (ans == 'a')
+    {
+      new_shelf_name = ask_shelf_name(Warehouse, item);
+      int amount = ask_amount();
+      add_shelf(item, new_shelf_name, amount);
+    }
+
+  else // ans == 'r'
+    {
+      puts("Remove shelf (not avalible yet)");
+      //remove shelf
+    }
+  puts("Item with updated shelf names");
+  print_shelf_names(item, WithoutNumbers);
+  return item;
+}
+
 void edit_item_IO_aux(root* root, node* item) 
 {
    puts("\n----- EDIT ITEM -------------");
-   print_box(item, WithNumbers);
-   puts("Waht would you like to edit???????");
-   puts("hmmm okay lets change the name");
-   edit_name_IO(root, item);
-   /* 
+  
+
   bool cont_edit = true;
 
   while (cont_edit)
     {
-      //edit_shelf(warehouse_list, choosed_shelf, name, description, price, shelf_name, num_items);
+      print_box(item, WithNumbers);
       int edit = ask_int_q("What would you like to edit?", 1, 5);
   
       switch (edit)
 	{
-	case 1: edit_name_IO(tree, item);
+	case 1: item = edit_name_IO(root, item);
 	  break;
-	case 2: {
-	  print_description(item, WithoutNumbers);
-	  description = ask_str_q("\nNew description: ");} break;
-	case 3: {
-	  print_price(item, WithoutNumbers);
-	  price = ask_int_q("\nNew price", 1, 99999999);} break;
-	case 4: {
-	  print_shelf_name(item, WithoutNumbers);
-	  shelf_name = ask_str_q("\nNew shelf number: ");
-	  shelf_name = fix_shelf_name(warehouse_list, shelf_name);} break;
+	case 2: item = edit_description_IO(root, item); break;
+	case 3: item = edit_price_IO(root, item); break;
+	case 4: item = edit_shelfname_IO(root, item);
+	  break;
 	case 5: {
-	  print_num_items(item, WithoutNumbers);
-	  num_items = ask_int_q("\nNew num_items: ", 1, 99999999);} break;
+	  print_amount(item, WithoutNumbers);
+	  /*num_items = ask_int_q("\nNew num_items: ", 1, 99999999); */} break;
 	default: puts("defaaaauultttt");
 	}
       cont_edit = ask_yn("Continue edit this item? y/n ");
         
-      } */
+      }
 }
 
 
@@ -186,10 +230,10 @@ void edit_item_IO(root * root)
 
   while (continue_edit)
     {
-      print_warehouse(Warehouse, low, high);
+      print_tree(root, Warehouse, low, high);
       print_line();
 
-      if (total < high)
+      if (total <= high)
 	{
 	  answer = ask_alt("\nWhat would you like to do? \n [c]hoose an item to edit\n [s]ee next page (not available)\n [e]xit and go back to main menu", "ce");
 	}
@@ -222,17 +266,19 @@ void edit_item_IO(root * root)
 }
 
 
-void show_warehouse_IO(tree_root* tree)
+void show_warehouse_IO(root* root, tree_root* tree)
 {
   int low = 0;
   int high = ItemsPerPage;
  
   char answer;
   int total = total_items(Top(tree), 0);
+  printf("total: %d", total);
   while(true)
     {
-      print_warehouse(tree, low, high);
-      if (total < high)
+      print_tree(root, tree, low, high);
+      printf("total: %d\thigh: %d\n", total, high);
+      if (total <= high)
 	{
 	  answer = ask_alt("\nWhat would you like to do?\n [s]how an item\n [n]ext page (not available)\n [e]xit", "se");
 	}
@@ -278,38 +324,38 @@ void print_cart(tree* tree, cart* cart)
 */
 void print_box(node* node, bool numbers)
 {
-  printf("\n=====\t\t\t=====\n");
+  printf("\n=====\t\t=====\n");
   print_name(node, numbers);
   print_description(node, numbers);
   print_price(node, numbers);
   print_shelf_names(node, numbers);
   print_amount(node, numbers);
-  printf("=====\t\t\t=====\n\n");
+  printf("=====\t\t=====\n\n");
 }
 
 void print_name(node *node, bool number)
 {
-  if (number) printf("1. Name:\t\t%s\n", get_name(node));
-  else printf(" Name:\t\t\t%s\n", get_name(node));
+  if (number) printf("1. Name\t\t%s\n", get_name(node));
+  else printf(" Name:\t\t%s\n", get_name(node));
 }
 void print_description(node *node, bool number)
 {
-  if (number) printf("2. Description:\t\t%s\n", get_description(node));
-  else printf(" Description:\t\t%s\n", get_description(node));
+  if (number) printf("2. Description\t%s\n", get_description(node));
+  else printf(" Description:\t%s\n", get_description(node));
 }	    
 void print_price(node *node, bool number)
 {
-  if (number) printf("3. Price:\t\t%d kr\n", get_price(node));
-  else printf(" Price:\t\t\t%d kr\n", get_price(node));
+  if (number) printf("3. Price\t%d kr\n", get_price(node));
+  else printf(" Price:\t\t%d kr\n", get_price(node));
 }	  
 void print_shelf_names(node *node, bool number)
 {
-  if (number) printf("4. Shelf:\t\t");
-  else printf(" Shelf:\t\t\t");
-  shelf_names(get_ll_node(get_list(node)));
+  if (number) printf("4. Shelf\t");
+  else printf(" Shelf:\t\t");
+  shelf_names(get_first(get_list(node)));
 }	   
 void print_amount(node *node, bool number)
 {
-  if (number) printf("5. Amount:\t\t%d\n", get_amount(node));
-  else printf(" Amount:\t\t%d\n", get_amount(node));
+  if (number) printf("5. Amount\t%d\n", get_amount(node));
+  else printf(" Amount:\t%d\n", get_amount(node));
 }
