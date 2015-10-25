@@ -24,18 +24,18 @@ void main_menu()
  
   bool cont = false;
   root* root = create_new_root();
-  //Warehouse_root * warehouse = create_new_Warehouse();
-  insert_new_node(Warehouse, "Gurka", "grön", 11, "A11", 11);
-  insert_new_node(Warehouse, "Lampa", "skäggig", 1, "K8", 1);
-  insert_new_node(Warehouse, "Häst", "fulsfdkj", 34, "K5", 1);
-  insert_new_node(Warehouse, "Lars", "grön", 2, "F2", 1);
-  insert_new_node(Warehouse, "Berg", "högt", 10000, "G34", 3);
-  insert_new_node(Warehouse, "Igelkott", "högt", 10000, "G33", 3);
-  insert_new_node(Warehouse, "Danne", "skäggig", 1, "E2", 1);
-  insert_new_node(Warehouse, "Gös", "skäggig", 1, "E3", 1);
-  insert_new_node(Warehouse, "Apa", "skäggig", 1, "E4", 1);
-  insert_new_node(Warehouse, "Iller", "skäggig", 1, "K7", 1);
-  insert_new_node(Warehouse, "Hej hej", "skäggig", 1, "K9", 1);
+
+  insert_new_ware(Warehouse, "Gurka", "grön", 11, "A11", 11);
+  insert_new_ware(Warehouse, "Lampa", "skäggig", 1, "K8", 1);
+  insert_new_ware(Warehouse, "Häst", "fulsfdkj", 34, "K5", 1);
+  insert_new_ware(Warehouse, "Lars", "grön", 2, "F2", 1);
+  insert_new_ware(Warehouse, "Berg", "högt", 10000, "G34", 3);
+  insert_new_ware(Warehouse, "Igelkott", "högt", 10000, "G33", 3);
+  insert_new_ware(Warehouse, "Danne", "skäggig", 1, "E2", 1);
+  insert_new_ware(Warehouse, "Gös", "skäggig", 1, "E3", 1);
+  insert_new_ware(Warehouse, "Apa", "skäggig", 1, "E4", 1);
+  insert_new_ware(Warehouse, "Iller", "skäggig", 1, "K7", 1);
+  insert_new_ware(Warehouse, "Hej hej", "skäggig", 1, "K9", 1);
 
   node* gurka = find_node(Top(Warehouse), "Gurka");
   add_shelf(gurka, "A5", 5);
@@ -50,9 +50,7 @@ void main_menu()
   puts("shelves");
   print_shelf_names(gurka, WithoutNumbers);
   print_line();
-  
-  change_shelf_name(gurka, get_shelf(gurka, "A4"), "L45");
-  puts("shelves after changing name");
+  gurka = remove_amount(gurka, 11);
   print_shelf_names(gurka, WithoutNumbers);
   print_line(); 
   

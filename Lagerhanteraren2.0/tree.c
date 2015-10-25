@@ -5,7 +5,7 @@
 
 
 node* separate_node(tree_root *tree, node* rn);
-int print_tree_aux(node* n, int i, int low, int high);
+int print_tree_aux(node* n, int i, int low, int high, bool warehouse);
 
 struct root_s
 {
@@ -60,10 +60,6 @@ node* get_topnode(tree_root* tree)
 {
   return (tree -> top_node);
 }
-//---------------------------------------------------
-//---------------------------------------------------
-//---------------------------------------------------
-
 node* getLeft(node* node)
 {
   return (node -> left_node);
@@ -73,7 +69,6 @@ node* getRight(node* node)
 {
   return (node -> right_node);
 }
-
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------
@@ -90,18 +85,35 @@ int get_price(node *node) //endast wh
 {
   return (((ware*) node -> n_content) -> price);
 }
-
 void* get_list(node* n) //endast wh
 {
   return (((ware*)n -> n_content) -> list);
 }
+int get_cart_amount(node *cart_node)
+{
+  cart_item* ci = cart_node -> n_content;
+  return(ci -> amount);
+}
+int get_cart_price(node* cart_node)
+{
+  cart_item* ci = cart_node -> n_content;
+  return (ci -> total_price);
+}
+
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------
 
 
+node * create_new_node(char* key)
+{
+  node *node = calloc(1, sizeof(struct node_s));
+  assert(node != NULL);
+  node -> key = key;
+  return node;
+}
 
-ware* create_new_ware(char* name, char* description, int price)
+node* create_new_ware(char* name, char* description, int price, char* shelf_name, int amount)
 {
   ware* ware = calloc(1, sizeof(struct ware_s));
   assert (ware != NULL);
@@ -109,27 +121,31 @@ ware* create_new_ware(char* name, char* description, int price)
   ware -> name = name;
   ware -> description = description;
   ware -> price = price;
-  return ware;
-}
+  node* n = create_new_node(name);
 
-
-// gör en funktion som heter Create_new_content
-node * create_new_node(char* name, char* description, int price, char* shelf_name, int amount)
-{
-  node *node = calloc(1, sizeof(struct node_s));
-  assert(node != NULL);
-  node -> key = name;
-
-  ware* ware = create_new_ware(name, description, price);
-  node -> n_content = ware;
+  n -> n_content = ware;
 
   shelf * shelf = create_new_shelf(shelf_name, amount);
   linked_list_node * ll_node = create_new_ll(shelf);
   list* list = create_new_list(amount, ll_node); //lägg till &destroy_shelf
 
   ware -> list = list;
- 
-  return node;
+  return n;
+}
+
+node* create_new_cart_item(node* item, int amount)
+{
+  cart_item* ci = calloc(1, sizeof(struct cart_item_s));
+  assert(ci != NULL);
+
+  ci -> name = strdup(get_name(item));  //strcpy(ci -> name, get_name(item));
+  ci -> price = get_price(item);
+  ci -> amount = amount;
+  ci -> total_price = (ci -> price)*(ci -> amount);
+
+  node * n = create_new_node(ci -> name);
+  n -> n_content = ci;
+  return n;  
 }
 
 tree_root* create_new_tree()
@@ -169,7 +185,7 @@ void change_name(root* root, node* n, char* new_name)
       ((cart_item*) tmp_node_cart -> n_content) -> name = tmp_node_cart -> key;
       insert_node(Cart, tmp_node_cart);
     }
-  print_tree_aux(Top(Warehouse), 0,0,0);
+  print_tree_aux(Top(Warehouse), 0,0,0, true);
   return;
 }
 
@@ -183,12 +199,19 @@ void change_price(root* root, node* n, int new_price)
   ((ware*)n -> n_content) -> price = new_price;
   if (node_exists(Cart, get_name(n)))
     {
-      ((cart_item*)n -> n_content) -> price = new_price;
-      //((cart_item*)n -> n_content) -> total_price = ; uppdatera total pris
+      cart_item* ci = n -> n_content;
+      ci -> price = new_price;
+      ci  -> total_price = new_price * (ci -> amount);
     }
 }
 
-
+void change_cart_amount(node* cart_node, int add_amount)
+{
+  cart_item* ci = cart_node -> n_content;
+  int new_amount =  ci -> amount + add_amount;
+  ci -> amount = new_amount;
+  ci -> total_price = ci -> price * new_amount;
+}
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------
@@ -222,22 +245,13 @@ bool node_exists(tree_root* tree, char* name)
   return false;
 }
 
-void insert_new_node(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount)
+void insert_new_ware(tree_root* tree, char* name, char* description, int price, char* shelf_name, int amount)
 {
-  node * node = find_node(Top(tree), name);
-  if (node == NULL)
-    {
-      node = create_new_node(name, description, price, shelf_name, amount);
-      insert_node(tree, node);
-      return;
-    }
-  else // find_node == any node
-    {
-      add_shelf(node, shelf_name, amount); //ska det va såhär
-      return;
-    }
+   node* node = create_new_ware(name, description, price, shelf_name, amount);
+   insert_node(tree, node);
+   return;
+  
 }
-
 
 void insert_node(tree_root* tree, node* new_node)
 {  
@@ -320,6 +334,21 @@ node* find_prev_node(tree_root* tree, node* n, char* name)
     }
 }
 
+void update_cart_amount(root* root, char* name, int limit)
+{
+  if (node_exists(Cart, name))
+    {
+      node* ware_node = find_node(Top(Warehouse), name);
+      node* cart_node = find_node(Top(Cart), name);
+      cart_item* ci = cart_node -> n_content;
+      int cart_amount = ci -> amount;
+      if (cart_amount > get_amount(ware_node))
+	{
+	  ci -> amount = get_amount(ware_node);
+	  ci -> total_price = (ci -> total_price) * (ci -> amount);
+	}
+    }
+}
 
 node* child(node* n)
 {
@@ -441,8 +470,19 @@ void destroy_tree(tree_root* tree)
 //---------------------------------------------------
 //---------------------------------------------------
 //---------------------------------------------------
+int total_price(node* n, int total)
+{
+  if(n)
+    {
+      total = total_price(n->left_node, total);
+      total = total_price(n->right_node, total);
+      int price = get_cart_price(n);
+      return (total + price);
+    }
+  return(total);
+}
 
-int total_items(node *n, int total)
+int total_items(node* n, int total)
 {
   if(n)
     {
@@ -453,14 +493,17 @@ int total_items(node *n, int total)
   return(total);
 }
 
-int print_tree_aux(node* n, int i, int low, int high) 
+int print_tree_aux(node* n, int i, int low, int high, bool warehouse) 
  {
    if(n)
      {
-       i = print_tree_aux(n->left_node, i, low, high);
+       i = print_tree_aux(n->left_node, i, low, high, warehouse);
        if ((low < i && i <= high) || (low == high))
-	 printf("%d. %s\n", i, get_name(n));
-       i = print_tree_aux(n->right_node, i, low, high);
+	 {
+	   if (warehouse) printf("%d. %s\n", i, get_name(n));
+	   else printf("* %s (%d)\n", get_name(n), get_cart_amount(n));
+	 }
+       i = print_tree_aux(n->right_node, i, low, high, warehouse);
        return (i);
      }
    return(i+1);
@@ -482,8 +525,9 @@ void print_tree(root* root, tree_root *tree, int low, int high)
     }
   if (low == 0 && warehouse) printf("----- Items in warehouse ------\n");
   else if (low == 0) printf("----- Items in cart ------\n");
-  
-  print_tree_aux(Top(tree), 0, low, high);
+
+  print_tree_aux(Top(tree), 0, low, high, warehouse);
+  if(!warehouse) printf("\nTotal price: %d kr\n", total_price(Top(tree), 0));  
   print_line();
 }
 

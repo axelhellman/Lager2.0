@@ -12,21 +12,63 @@ void edit_item_IO_aux(root* root, node* n);
 
 void add_item_to_cart_IO(root* root)
 {
-  printCart();
-  printWarehouse();
-bool add_more;
-  char answer = ask_alt("What would you like to do?\n [c]hoose an item to put in cart\n [e]xit", "ce");
-  if (answer == 'e') add_more = false;
-  else add_more = true;
-
-  while (add_more)
+  char answer;
+  bool add_more = true;
+  while(add_more)
     {
-      node* n = ask_item(Warehouse);
-      print_name(n, WithoutNumbers);
-      print_amount(n, WithoutNumbers);
-      int to_cart = ask_int_q("How many would you like add to cart?", 1, get_amount(n));
+      printCart();
+      printWarehouse();
+      if (tree_is_empty(Cart))
+	{
+	  answer = ask_alt("What would you like to do?\n [p]ut an item in cart\n [e]xit", "pe");
+	}
+      else
+	{
+	  answer = ask_alt("What would you like to do?\n [p]ut an item in cart\n [c]heck out cart\n [e]xit", "pce");
+	}
+ 
+      if (answer == 'e') add_more = false;
+      else if (answer == 'p')
+	{
+	  int add_to_cart;
+	  add_more = true;
+	  node* n = ask_item(Warehouse);
+	  print_line();
+	  print_name(n, WithoutNumbers);
+	  print_amount(n, WithoutNumbers);
+	  print_line();
 
+	  if(node_exists(Cart, get_name(n)))
+	    {
+	      node* cart_node = find_node(Top(Cart), get_name(n));
+	      int crnt_amount = get_cart_amount(cart_node);
+	      add_to_cart = ask_int_q("How many would you like add to cart?", 1, (get_amount(n) - crnt_amount));
+	      change_cart_amount(cart_node, add_to_cart);
+	    }
+	  else
+	    {
+	      add_to_cart = ask_int_q("How many would you like add to cart?", 1, get_amount(n));
+	      node* cart_node = create_new_cart_item(n, add_to_cart);
+	      insert_node(Cart, cart_node);
+	    }
+	  
+	}
+      else
+	{
+	  add_more = false;
+	  puts("checka ut cart");
+	  printCart();
+	  print_check_out(root, Top(Cart));
+	  print_line();
+	  char ans = ask_alt("[c]heck out cart // [e]xit", "ce");
+	  if (ans == 'c')
+	    {
+	      puts("checkar ut din cart");
+	      // check_out_cart
+	    }
+	}
     }
+ 
 }
 
 void add_ware_IO(root *root)
@@ -64,7 +106,7 @@ void add_ware_IO(root *root)
   amount = ask_amount();
   
   print_line();
-  insert_new_node(Warehouse, name, description, price, shelf_name, amount);
+  insert_new_ware(Warehouse, name, description, price, shelf_name, amount);
 
   node = find_node(Top(Warehouse), name);
   printf("\n\tYour new item:");
@@ -158,62 +200,99 @@ node* edit_price_IO(root* root, node* item)
   change_price(root, item, new_price);
   return item;
 }
-node* edit_shelfname_IO(root* root, node* item)
+node* edit_shelf_IO(root* root, node* item)
 {
   print_shelf_names(item, WithoutNumbers);
+  int amount;
   char* new_shelf_name = NULL;
-  char ans = ask_alt("[e]dit a shelfname // [a]dd an new shelf // [r]emove a shelf", "ear");
+  char ans = ask_alt("[e]dit a shelf // [a]dd an new shelf // [r]emove a shelf", "ear");
   if (ans == 'e')
     {
-      shelf* shelf = ask_shelf(Warehouse, item);
-      new_shelf_name = ask_shelf_name(Warehouse, item);
-      change_shelf_name(item, shelf, new_shelf_name);	
+      puts("Shelf you want to edit edit edit edit");
+      shelf* s = ask_shelf(Warehouse, item);
+
+      char ans2 = ask_alt("Edit [n]ame // edit [a]mount // edit [b]oth", "nab");
+      if (ans2 == 'n')
+	{
+	  new_shelf_name = ask_shelf_name(Warehouse, item);
+	  amount = get_shelf_amount2(s);
+	  remove_shelf(item, s);
+	}
+      else if (ans2 == 'a')
+	{
+	  amount = ask_amount();
+	  new_shelf_name = get_shelf_name3(s);
+	  //remove_shelf(item, s);
+	}
+      else // ans2 == 'b'
+	{
+	  new_shelf_name = ask_shelf_name(Warehouse, item);
+	  amount = ask_amount();
+	}
+      add_shelf(item, new_shelf_name, amount);
     }
   else if (ans == 'a')
     {
       new_shelf_name = ask_shelf_name(Warehouse, item);
-      int amount = ask_amount();
+      amount = ask_amount();
       add_shelf(item, new_shelf_name, amount);
     }
 
   else // ans == 'r'
     {
-      puts("Remove shelf (not avalible yet)");
-      //remove shelf
+      shelf* s = ask_shelf(Warehouse, item);
+      remove_shelf(item, s);
     }
-  puts("Item with updated shelf names");
+  puts("Item with updated shelfs");
   print_shelf_names(item, WithoutNumbers);
+  return item;
+}
+
+node* edit_amount_IO(root* root, node* item)
+{
+  int old_amount = get_amount(item);
+  int new_amount = ask_amount();
+
+  if (new_amount > old_amount)
+    {
+      item = add_amount(item, (new_amount - old_amount));
+    }
+  else if (new_amount < old_amount)
+    {
+      item = remove_amount(item, (old_amount - new_amount)); 
+    }
+  else puts("okay no changes");
+
   return item;
 }
 
 void edit_item_IO_aux(root* root, node* item) 
 {
-   puts("\n----- EDIT ITEM -------------");
+  puts("\n----- EDIT ITEM -------------");
   
-
+  print_box(item, WithNumbers);
   bool cont_edit = true;
 
   while (cont_edit)
     {
-      print_box(item, WithNumbers);
+      
       int edit = ask_int_q("What would you like to edit?", 1, 5);
   
       switch (edit)
 	{
-	case 1: item = edit_name_IO(root, item);
-	  break;
+	case 1: item = edit_name_IO(root, item); break;
 	case 2: item = edit_description_IO(root, item); break;
 	case 3: item = edit_price_IO(root, item); break;
-	case 4: item = edit_shelfname_IO(root, item);
-	  break;
-	case 5: {
-	  print_amount(item, WithoutNumbers);
-	  /*num_items = ask_int_q("\nNew num_items: ", 1, 99999999); */} break;
+	case 4: item = edit_shelf_IO(root, item); break;
+	case 5: item = edit_amount_IO(root, item); break;
 	default: puts("defaaaauultttt");
 	}
+      print_box(item, WithNumbers);
       cont_edit = ask_yn("Continue edit this item? y/n ");
-        
-      }
+    }
+  update_cart_amount(root, get_name(item), get_amount(item));
+  if (list_is_empty(item))
+    remove_node(root, item);
 }
 
 

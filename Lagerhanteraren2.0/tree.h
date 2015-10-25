@@ -33,23 +33,28 @@ typedef struct cart_item_s cart_item;
 tree_root* get_warehouse(root* root);
 tree_root* get_cart(root* root);
 
-node * create_new_node(ArgsWare);
+node* create_new_ware(ArgsWare);
+node* create_new_cart_item(node* item, int amount);
+tree_root * create_new_tree();
+root* create_new_root();
+
 
 void destroy_tree(tree_root* tree); //argument?
 
-// skickar in ett namn på en vara och trädet. Returnerar true om varan redan finns. Annars returernar den false
 bool node_exists(tree_root* tree, char* name);
 
 void insert_node(tree_root* tree, node* node);
   
 bool tree_is_empty(tree_root* tree);
 
-void insert_new_node(tree_root* tree, ArgsWare);
+void insert_new_ware(tree_root* tree, ArgsWare);
   
 node * find_node(node* node, char* name);
 
-tree_root * create_new_tree();
+void update_cart_amount(root* root, char* name, int limit);
 
+void change_cart_amount(node* cart_node, int add_amount);
+int get_cart_amount(node* node);
 char * get_name(node *node);
 char * get_description(node *node);
 int get_price(node *node);
@@ -57,15 +62,15 @@ node* get_topnode(tree_root *tree);
 
 void* get_list(node * n);
 
-void printtest(node* n);
+//void printtest(node* n);
 void remove_node(root *root, node* n);
-int print_tree_aux(node *n, int i, int low, int high);
+
 void print_line();
-void print_tree(root* root, tree_root* tree, int low, int high);
 
+int total_price(node* n, int total);
 int total_items(node* n, int i);
-
-root* create_new_root();
+//int print_tree_aux(node *n, int i, int low, int high, bool warehouse);
+void print_tree(root* root, tree_root* tree, int low, int high);
 
 void change_name(root *root, node *n, char *new_name);
 void change_description(node* n, char* new_description);
