@@ -49,16 +49,20 @@ bool tree_is_empty(tree_root* tree);
 
 void insert_new_ware(tree_root* tree, ArgsWare);
   
-node * find_node(node* node, char* name);
+node* find_node(node* node, char* name);
 
 void update_cart_amount(root* root, char* name, int limit);
-
 void change_cart_amount(node* cart_node, int add_amount);
-int get_cart_amount(node* node);
+
+
 char * get_name(node *node);
 char * get_description(node *node);
 int get_price(node *node);
+int get_cart_amount(node* node);
+
 node* get_topnode(tree_root *tree);
+node* getLeft(node* node);
+node* getRight(node* node);
 
 void* get_list(node * n);
 
@@ -76,8 +80,8 @@ void change_name(root *root, node *n, char *new_name);
 void change_description(node* n, char* new_description);
 void change_price(root* root, node* n, int new_price);
 
-node* getLeft(node* node);
-node* getRight(node* node);
 
+
+void check_out_cart(root* root);
 
 #endif /* TREE_H */

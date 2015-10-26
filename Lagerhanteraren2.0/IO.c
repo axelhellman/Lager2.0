@@ -64,7 +64,8 @@ void add_item_to_cart_IO(root* root)
 	  if (ans == 'c')
 	    {
 	      puts("checkar ut din cart");
-	      // check_out_cart
+	      check_out_cart(root);
+	      puts("done");
 	    }
 	}
     }

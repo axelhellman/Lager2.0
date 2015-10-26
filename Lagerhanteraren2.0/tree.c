@@ -426,8 +426,30 @@ node* separate_node(tree_root* tree, node* rn)
   print_line();
   return rn;
 }
+void check_out_cart_aux(root* root, node* n)
+{
+  if (n)
+    {
+      check_out_cart_aux(root, getLeft(n));
+      
+      int amount = get_cart_amount(n);
+      node* w_node = find_node(Top(Warehouse), get_name(n));
+      remove_amount(w_node, amount);
+      if(list_is_empty(w_node))
+	{
+	  remove_node(root, w_node);
+	}
+      check_out_cart_aux(root, getRight(n));
+    }
 
+}
 
+void check_out_cart(root* root)
+{
+  check_out_cart_aux(root, Top(Cart));
+  puts("destroy hela carten");
+
+}
 
 
 
