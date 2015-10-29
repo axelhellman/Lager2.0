@@ -11,28 +11,20 @@
 #ifndef IO_H 
 #define IO_H
 
-#define ItemsPerPage 8
+#define ItemsPerPage 20
 
-//funktioner som menu kallar på
- 
 
 void add_ware_IO(root* root);
 
 void remove_item_IO(root* root);
 
-void add_item_to_cart_IO(root* root);
-
-
 void edit_item_IO(root* root);
-/*
-void undo_action_IO(warehouse * warehouse_list); */
-
-bool exit_warehouse();
-
-int ask_int_q(char* question, int low, int high);
 
 void show_warehouse_IO(root* root, tree_root * tree);
 
-void print_shelf_names(node *node, bool numbers);
+void add_item_to_cart_IO(root* root);
+
+bool exit_warehouse();
+
 #endif /* IO_H */
 

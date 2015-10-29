@@ -12,16 +12,16 @@ typedef struct shelf_s shelf;
 //---------------------------------------------------
 //---------------------------------------------------
 
-
-//char * get_shelf_name(node *node)
 int get_amount(node* node);
-char* get_shelf_name2(linked_list_node *crnt_ll_node);
-int get_shelf_amount(linked_list_node *crnt_ll_node);
+
+char* get_shelf_name1(shelf* s);
+//char* get_shelf_name2(linked_list_node *crnt_ll_node);
+
+int get_shelf_amount1(shelf* s);
+//int get_shelf_amount2(linked_list_node *crnt_ll_node);
+
 linked_list_node* get_first(list* l);
 shelf* get_shelf(node* n, char* shelf_name);
-
-char* get_shelf_name3(shelf* s);
-int get_shelf_amount2(shelf* s);
 
 //---------------------------------------------------
 //---------------------------------------------------
@@ -36,21 +36,19 @@ shelf* create_new_shelf(char* shelf_name, int amount);
 //---------------------------------------------------
 
 bool list_is_empty(node* n);
-void remove_shelf(node* n, shelf* s);
-
-void insert_shelf(list *list, shelf *new_shelf);
 
 void add_shelf(node* node, char* shelf_name, int amount);
+void remove_shelf(node* n, shelf* s);
 
 node* add_amount(node* n, int amount);
 node* remove_amount(node* n, int amount);
 
-bool node_has_shelf(node* node, char* shelf_name);
 bool shelf_is_taken_list(list* list, char* shelf_name);
 bool shelf_is_taken(node* node, char* shelf_name);
 
 void print_check_out(root* root, node* n);
 void shelf_names(linked_list_node *crnt_ll_node);
-void print_shelfs(linked_list_node *crnt_ll_node);
+
+void destroy_list(list* l);
 
 #endif /* LIST_H */

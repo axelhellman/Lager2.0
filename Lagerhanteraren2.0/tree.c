@@ -2,10 +2,20 @@
 #ifdef LIST_H
 #include "list.h"
 #endif /* LIST_H */
+#include "smallfunc.h"
 
+// ----- HIDDEN FUNCTIONS ------------------------
 
-node* separate_node(tree_root *tree, node* rn);
+bool node_is_leaf(node* n);
+node* child(node* n);
+void connect_child(node* prev_node, node* n, node* child);
+void re_insert_nodes(tree_root* tree, tree_root* tmp_tree);
+node* separate_node(root* root, tree_root* tree, node* rn);
 int print_tree_aux(node* n, int i, int low, int high, bool warehouse);
+void check_out_cart_aux(root* root, node* n);
+	    
+//---------------------------------------------------
+//---------------------------------------------------
 
 struct root_s
 {
@@ -15,10 +25,8 @@ struct root_s
 
 struct tree_root_s
 {
-  node *top_node; //tree är top-node
+  node *top_node;
 };
-
-typedef void(*destructor)(void*);
 
 struct node_s
 {
@@ -26,7 +34,6 @@ struct node_s
   void *n_content;
   node *left_node;
   node *right_node;
-  // destructor free_content;
 };
 
 struct ware_s
@@ -39,8 +46,8 @@ struct ware_s
 
 struct cart_item_s
 {
-  char* name; //behövs egentligen inte
-  int price; //behövs inte
+  char* name;
+  int price; 
   int amount;
   int total_price;
 };
@@ -64,7 +71,6 @@ node* getLeft(node* node)
 {
   return (node -> left_node);
 }
-
 node* getRight(node* node)
 {
   return (node -> right_node);
@@ -73,9 +79,17 @@ node* getRight(node* node)
 //---------------------------------------------------
 //---------------------------------------------------
 
-char * get_name(node *node)
+char * get_key(node *node)
 {
   return (node -> key);
+}
+char * get_ware_name(node *node)
+{
+  return (((ware*) node -> n_content) -> name);
+}
+char * get_cart_name(node *node)
+{
+  return (((cart_item*) node -> n_content) -> name);
 }
 char * get_description(node *node)
 {
@@ -105,21 +119,23 @@ int get_cart_price(node* cart_node)
 //---------------------------------------------------
 
 
-node * create_new_node(char* key)
+node * create_new_node(char* name)
 {
   node *node = calloc(1, sizeof(struct node_s));
   assert(node != NULL);
-  node -> key = key;
+  node -> key = strdup(name);
+ 
   return node;
 }
 
-node* create_new_ware(char* name, char* description, int price, char* shelf_name, int amount)
+node* create_new_ware(ArgsWare)
 {
   ware* ware = calloc(1, sizeof(struct ware_s));
+ 
   assert (ware != NULL);
-
-  ware -> name = name;
-  ware -> description = description;
+ 
+  ware -> name = strdup(name);
+  ware -> description = strdup(description);
   ware -> price = price;
   node* n = create_new_node(name);
 
@@ -127,7 +143,7 @@ node* create_new_ware(char* name, char* description, int price, char* shelf_name
 
   shelf * shelf = create_new_shelf(shelf_name, amount);
   linked_list_node * ll_node = create_new_ll(shelf);
-  list* list = create_new_list(amount, ll_node); //lägg till &destroy_shelf
+  list* list = create_new_list(amount, ll_node); 
 
   ware -> list = list;
   return n;
@@ -138,12 +154,13 @@ node* create_new_cart_item(node* item, int amount)
   cart_item* ci = calloc(1, sizeof(struct cart_item_s));
   assert(ci != NULL);
 
-  ci -> name = strdup(get_name(item));  //strcpy(ci -> name, get_name(item));
+  char* name = strdup(get_key(item));
+  ci -> name = name;
   ci -> price = get_price(item);
   ci -> amount = amount;
   ci -> total_price = (ci -> price)*(ci -> amount);
 
-  node * n = create_new_node(ci -> name);
+  node * n = create_new_node(name);
   n -> n_content = ci;
   return n;  
 }
@@ -172,32 +189,46 @@ root* create_new_root()
 
 void change_name(root* root, node* n, char* new_name)
 {
-  char* old_name = get_name(n);
-  n = separate_node(Warehouse, n);
-  n -> key = new_name;
-  ((ware*) n -> n_content) -> name = n -> key;
+  char* old_key = get_key(n);
+  char* old_name = get_ware_name(n);
+  n = separate_node(root, Warehouse, n);
+
+  n -> key = strdup(new_name);
+  ((ware*) n -> n_content) -> name = strdup(new_name);
   insert_node(Warehouse, n);
 
   if (node_exists(Cart, old_name))
     {
-      node* tmp_node_cart = separate_node(Cart, n);
-      tmp_node_cart -> key = new_name;
-      ((cart_item*) tmp_node_cart -> n_content) -> name = tmp_node_cart -> key;
+      node* tmp_node_cart = find_node(Top(Cart), old_name);
+      tmp_node_cart = separate_node(root, Cart, tmp_node_cart);
+      char* old_cart_key = get_key(tmp_node_cart);
+      char* old_cart_name = get_cart_name(tmp_node_cart);
+
+      tmp_node_cart -> key = strdup(new_name);
+      ((cart_item*) tmp_node_cart -> n_content) -> name = strdup(new_name);
       insert_node(Cart, tmp_node_cart);
+
+      free(old_cart_key);
+      free(old_cart_name);
     }
+  free(old_key);
+  free(old_name);
   print_tree_aux(Top(Warehouse), 0,0,0, true);
   return;
 }
 
 void change_description(node* n, char* new_description)
 {
-  ((ware*)n -> n_content) -> description = new_description;
+  char* old_description = get_description(n);
+  ((ware*)n -> n_content) -> description = strdup(new_description);
+  //free(new_description);
+  free(old_description);
 }
 
 void change_price(root* root, node* n, int new_price)
 {
   ((ware*)n -> n_content) -> price = new_price;
-  if (node_exists(Cart, get_name(n)))
+  if (node_exists(Cart, get_key(n)))
     {
       cart_item* ci = n -> n_content;
       ci -> price = new_price;
@@ -216,11 +247,18 @@ void change_cart_amount(node* cart_node, int add_amount)
 //---------------------------------------------------
 //---------------------------------------------------
 
+bool tree_is_empty(tree_root *tree)
+{
+  if (tree == NULL) return true;
+  else if (tree -> top_node == NULL) return true;
+  else return false;
+}
+
 node* find_node(node* node, char* name)
 {
   if (node == NULL) return NULL;
   
-  char* crnt_node_name = get_name(node);
+  char* crnt_node_name = get_key(node);
 
   if (strcmp(name, crnt_node_name) == 0)
     {
@@ -234,10 +272,30 @@ node* find_node(node* node, char* name)
     {
       return find_node(node -> left_node, name);
     }
-    
-  //return NULL;
 }
 
+node* find_prev_node(tree_root* tree, node* n, char* name) //hidden?
+{
+  node* tmp_node = find_node(Top(tree), name);
+  if (n == NULL) return NULL;
+  char* crnt_node_name = get_key(n);
+  
+  if (n -> right_node == tmp_node) return n;
+  if (n -> left_node == tmp_node) return n;
+
+  if (strcmp(name, crnt_node_name) > 0)
+    {
+      return find_prev_node(tree, n -> right_node, name);
+    }
+  else if (strcmp(name, crnt_node_name) < 0)
+    {
+      return find_prev_node(tree, n -> left_node, name); 
+    }
+  else
+    {
+      return NULL;
+    }
+}
 
 bool node_exists(tree_root* tree, char* name)
 {
@@ -261,11 +319,11 @@ void insert_node(tree_root* tree, node* new_node)
       return;
     }
   node* crnt_node = tree -> top_node;
-  char* name = get_name(new_node);
+  char* name = get_key(new_node);
 
   while (true)
     {
-      char* crnt_node_name = get_name(crnt_node);  
+      char* crnt_node_name = get_key(crnt_node);  
       
       if (strcmp(name, crnt_node_name) > 0)
 	{
@@ -296,43 +354,6 @@ void insert_node(tree_root* tree, node* new_node)
 }
 
 
-bool node_is_leaf(node* n)
-{
-  if (n->right_node == NULL && n->left_node == NULL) return true;
-  else return false;
-}
-
-bool tree_is_empty(tree_root *tree)
-{
-  if (tree -> top_node == NULL) return true;
-  else return false;
-}
-
-
-node* find_prev_node(tree_root* tree, node* n, char* name)
-{
-  node* tmp_node = find_node(Top(tree), name);
-  if (n == NULL) return NULL;
-  char* crnt_node_name = get_name(n);
-  
-  
-  if (n -> right_node == tmp_node) return n;
-  if (n -> left_node == tmp_node) return n;
-
-  if (strcmp(name, crnt_node_name) > 0)
-    {
-      return find_prev_node(tree, n -> right_node, name);
-    }
-  else if (strcmp(name, crnt_node_name) < 0)
-    {
-      return find_prev_node(tree, n -> left_node, name); 
-    }
-  else
-    {
-      puts("else i find_prev_node");
-      return NULL;
-    }
-}
 
 void update_cart_amount(root* root, char* name, int limit)
 {
@@ -348,6 +369,144 @@ void update_cart_amount(root* root, char* name, int limit)
 	  ci -> total_price = (ci -> total_price) * (ci -> amount);
 	}
     }
+}
+
+void remove_node(root* root, node* n)
+{
+  n = separate_node(root, Warehouse, n);
+  if (node_exists(Cart, get_key(n)))
+    {
+      node* tmp_node_cart = separate_node(root, Cart, n);
+      destroy_nodes_aux(root, Cart, tmp_node_cart);
+    }
+  destroy_nodes_aux(root, Warehouse, n);
+}
+
+void check_out_cart(root* root)
+{
+  check_out_cart_aux(root, Top(Cart));
+  destroy_nodes(root, Cart, Top(Cart));
+  root -> cart -> top_node = NULL;
+}
+
+//---------------------------------------------------
+//---------------------------------------------------
+//---------------------------------------------------
+
+int total_price(node* n, int total)
+{
+  if(n)
+    {
+      total = total_price(n->left_node, total);
+      total = total_price(n->right_node, total);
+      int price = get_cart_price(n);
+      return (total + price);
+    }
+  return(total);
+}
+
+int total_items(node* n, int total)
+{
+  if(n)
+    {
+      total = total_items (n->left_node, total);
+      total = total_items (n->right_node, total);
+      return (total +1);
+    }
+  return(total);
+}
+
+void print_tree(root* root, tree_root *tree, int low, int high)
+{
+  bool warehouse = true;
+  if (root -> warehouse == tree) warehouse = true;
+  else warehouse = false;
+  printf("\n");
+  print_line();
+
+  if (tree_is_empty(tree))
+    {
+      if (warehouse == true) printf("The warehouse is empty!\n");
+      else if (warehouse == false) printf("Your cart is empty!\n");
+      print_line();
+      return;
+    }
+  if (low == 0 && warehouse) printf("----- Items in warehouse ------\n");
+  else if (low == 0) printf("----- Items in cart ------\n");
+
+  print_tree_aux(Top(tree), 0, low, high, warehouse);
+  if(!warehouse) printf("\nTotal price: %d kr\n", total_price(Top(tree), 0));  
+  print_line();
+}
+
+/*
+-----------------------------------------------------------------------
+-----------------------------------------------------------------------
+-------------- D E S T R O Y ------------------------------------------
+-----------------------------------------------------------------------
+----------------------------------------------------------------------- */
+
+void destroy_cart_item(cart_item * ci)
+{
+  free(ci -> name); 
+  free(ci);
+}
+void destroy_ware(ware* w)
+{
+  free(w -> name);
+  free(w -> description);
+  destroy_list((list*) w -> list);
+  free(w);
+}
+void destroy_nodes_aux(root* root, tree_root* tree, node* n)
+{
+  if (tree == Cart)
+    {
+      cart_item* ci = n -> n_content;
+      destroy_cart_item(ci);
+    }
+  else // tree == Warehouse
+    {
+      ware* w = n -> n_content;
+      destroy_ware(w);
+    }
+  free(n -> key);
+  free(n);
+}
+
+void destroy_nodes(root* root, tree_root* tree, node* n)
+{
+  if (n)
+    {
+      destroy_nodes(root, tree, getLeft(n));
+      destroy_nodes(root, tree, getRight(n));
+      destroy_nodes_aux(root, tree, n);
+    }
+}
+
+void destroy_tree(root* root, tree_root* tree)
+{
+  destroy_nodes(root, tree, Top(tree));
+  free(tree);
+} 
+
+void destroy_all(root* root)
+{
+  destroy_tree(root, Cart);
+  destroy_tree(root, Warehouse);
+  free(root);
+}
+
+//---------------------------------------------------
+//---------------------------------------------------
+//----- HIDDEN FUNCTIONS ----------------------------
+//---------------------------------------------------
+//---------------------------------------------------
+
+bool node_is_leaf(node* n)
+{
+  if (n->right_node == NULL && n->left_node == NULL) return true;
+  else return false;
 }
 
 node* child(node* n)
@@ -376,38 +535,40 @@ void re_insert_nodes(tree_root* tree, tree_root* tmp_tree)
   insert_node(tree, tmp_tree -> top_node -> right_node);
 }
 
-void remove_node(root* root, node* n)
-{
-  n = separate_node(Warehouse, n);
-  if (node_exists(Cart, get_name(n)))
-    {
-      node* tmp_node_cart = separate_node(Cart, n);
-      //destroy_node(tmp_node_cart);
-    }
-  printf("destroys node (%s) soon\n", get_name(n));
-  //destroy_node(n);
-
-}
-
-node* separate_node(tree_root* tree, node* rn)
+node* separate_node(root* root, tree_root* tree, node* rn)
 {
   bool leaf = node_is_leaf(rn);
-  node* prev_node = find_prev_node(tree, Top(tree), get_name(rn));
-  
+  node* prev_node = find_prev_node(tree, Top(tree), get_key(rn));
+
   if (leaf)
     {
-      if(Top(tree) == rn) tree -> top_node = NULL;
-      if (prev_node -> right_node == rn) prev_node -> right_node = NULL; 
-      if (prev_node -> left_node == rn) prev_node -> left_node = NULL;
+      if (tree -> top_node == rn) tree -> top_node = NULL;
+      if (prev_node == NULL) puts("prev_node är null");
+      if (prev_node != NULL)
+	{
+	  if (prev_node -> right_node == rn) prev_node -> right_node = NULL; 
+	  else if (prev_node -> left_node == rn) prev_node -> left_node = NULL;
+	  else puts("something is wrong");
+	}
     }
   else if (child(rn)) //node has one child
     {
       if (Top(tree) == rn) tree -> top_node  = child(rn);
       else connect_child(prev_node, rn, child(rn));
     }
-  else //node has two_children
+  
+  else //node has two children
     {
-      tree_root* tmp_tree = create_new_tree();
+      struct root_s * tmp_root = create_new_root();
+      tree_root* tmp_tree;
+      if (tree == Warehouse) 
+	{
+	  tmp_tree = tmp_root -> warehouse;
+	}
+      else
+	{
+	  tmp_tree = tmp_root -> cart;
+	}
       tmp_tree -> top_node = rn;
 
       if (Top(tree) == rn) tree -> top_node = NULL;	
@@ -421,98 +582,10 @@ node* separate_node(tree_root* tree, node* rn)
       rn -> right_node = NULL;
       rn -> left_node = NULL;
       tmp_tree -> top_node = NULL;
-      //destroy tmp_tree
+      destroy_all(tmp_root);
     }
   print_line();
   return rn;
-}
-void check_out_cart_aux(root* root, node* n)
-{
-  if (n)
-    {
-      check_out_cart_aux(root, getLeft(n));
-      
-      int amount = get_cart_amount(n);
-      node* w_node = find_node(Top(Warehouse), get_name(n));
-      remove_amount(w_node, amount);
-      if(list_is_empty(w_node))
-	{
-	  remove_node(root, w_node);
-	}
-      check_out_cart_aux(root, getRight(n));
-    }
-
-}
-
-void check_out_cart(root* root)
-{
-  check_out_cart_aux(root, Top(Cart));
-  puts("destroy hela carten");
-
-}
-
-
-
-
-/*
------------------------------------------------------------------------
------------------------------------------------------------------------
--------------- D E S T R O Y ------------------------------------------
------------------------------------------------------------------------
------------------------------------------------------------------------
- */
-
-/*
-
-void destroy_cart_item(void * ci)
-{
-  free(ci);
-}
-  
-
-
-
-void destroy_cart(cart* c)
-{
-  destroy_cart_item(cart_item* ci);
-  destroy_list(list* l);
-}
-
-void destroy_tree(tree_root* tree)
-{
-
-  destroy_shelf(shelf* s);
-  destroy_list(list* l); //and ll_nodes
-  destroy_ware(ware* w);
-  destroy_node(node* n);
-  destroy_cart(cart* c);
-} 
-*/
-
-//---------------------------------------------------
-//---------------------------------------------------
-//---------------------------------------------------
-int total_price(node* n, int total)
-{
-  if(n)
-    {
-      total = total_price(n->left_node, total);
-      total = total_price(n->right_node, total);
-      int price = get_cart_price(n);
-      return (total + price);
-    }
-  return(total);
-}
-
-int total_items(node* n, int total)
-{
-  if(n)
-    {
-      total = total_items (n->left_node, total);
-      total = total_items (n->right_node, total);
-      return (total +1);
-    }
-  return(total);
 }
 
 int print_tree_aux(node* n, int i, int low, int high, bool warehouse) 
@@ -522,8 +595,8 @@ int print_tree_aux(node* n, int i, int low, int high, bool warehouse)
        i = print_tree_aux(n->left_node, i, low, high, warehouse);
        if ((low < i && i <= high) || (low == high))
 	 {
-	   if (warehouse) printf("%d. %s\n", i, get_name(n));
-	   else printf("* %s (%d)\n", get_name(n), get_cart_amount(n));
+	   if (warehouse) printf("%d. %s\n", i, get_key(n));
+	   else printf("* %s (%d)\n", get_key(n), get_cart_amount(n));
 	 }
        i = print_tree_aux(n->right_node, i, low, high, warehouse);
        return (i);
@@ -531,26 +604,24 @@ int print_tree_aux(node* n, int i, int low, int high, bool warehouse)
    return(i+1);
  }
 
-void print_tree(root* root, tree_root *tree, int low, int high)
+
+void check_out_cart_aux(root* root, node* n)
 {
-  bool warehouse = true;
-  if (root -> warehouse == tree) warehouse = true;
-  else warehouse = false;
-  print_line();
-
-  if (tree_is_empty(tree))
+  if (n)
     {
-      if (warehouse == true) printf("The warehouse is empty!\n");
-      else if (warehouse == false) printf("Your cart is empty!\n");
-      print_line();
-      return;
+      check_out_cart_aux(root, getLeft(n));
+
+      int cart_amount = get_cart_amount(n);
+      node* w_node = find_node(Top(Warehouse), get_key(n));
+      remove_amount(w_node, cart_amount);
+      int ware_amount = get_amount(w_node);
+
+      if(list_is_empty(w_node) || ware_amount == 0)
+	{
+	  w_node = separate_node(root, Warehouse, w_node);
+	  destroy_nodes_aux(root, Warehouse, w_node);
+	}
+
+      check_out_cart_aux(root, getRight(n));
     }
-  if (low == 0 && warehouse) printf("----- Items in warehouse ------\n");
-  else if (low == 0) printf("----- Items in cart ------\n");
-
-  print_tree_aux(Top(tree), 0, low, high, warehouse);
-  if(!warehouse) printf("\nTotal price: %d kr\n", total_price(Top(tree), 0));  
-  print_line();
 }
-
-

@@ -1,7 +1,8 @@
 #include "smallfunc.h"
 #include "tree.h"
+#include "list.h"
 
-
+// ----- HIDDEN FUNCTIONS ---------------------------
 void strip(char* str);
 void clear(void);
 bool check_shelf_ans(char* answer);
@@ -9,19 +10,9 @@ void print_alt_chars(char* alternatives);
 bool out_of_range(int ok_ans, int low, int high);
 bool only_digits(char* answer);
 char* fix_shelf_name(tree_root * tree, node* n, char* shelf_name);
-// void lower_letter(char* answer, int i);
+// -------------------------------------------------
+// -------------------------------------------------
 
-/*
-char* ask_name()
-{
-  char* name = ask_str_q(question);
-  while(find_node(Top(tree), name))
-    {
-      name = ask_str_q(question);
-      question = "That item already exists in the warehouse, please choose another name.";
-      return name;
-    }
-    } */
 
 node* ask_item(tree_root *tree)
 {
@@ -29,11 +20,13 @@ node* ask_item(tree_root *tree)
   char* name = ask_str_q(question);
   while (! find_node(Top(tree), name))
     {
-      //free(name);
+      free(name);
       question = "That item doesn't exists in the warehouse, please choose another one.";
       name = ask_str_q(question);
     }
-  return find_node(Top(tree), name);
+  node* n = find_node(Top(tree), name);
+  free(name);
+  return n;
 }
 char* ask_description(node* n)
 {
@@ -52,10 +45,12 @@ void* ask_shelf(tree_root* tree, node* n)
   shelf_name = fix_shelf_name(tree, n, shelf_name);
      while (get_shelf(n, shelf_name) == NULL)
 	{
+	  free(shelf_name);
 	  printf("\nThat's not a shelf...\n");
 	  shelf_name = ask_shelf_name(tree, n);
 	}
      shelf* s = get_shelf(n, shelf_name);
+     free(shelf_name);
      return s;
 }
 
@@ -68,8 +63,7 @@ char* ask_shelf_name(tree_root* tree, node* n)
 
 int ask_amount()
 {
-  return (ask_int_q("Amount:", 1, 99999999));
-
+  return (ask_int_q("Amount:", 1, 9999));
 }
 
 char* ask_str_q (char *question)
@@ -182,6 +176,11 @@ char ask_alt(char* question, char* alternatives)
 
 }
 
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+// --------------------------------------------------------------
 
 char* fix_shelf_name(tree_root *tree, node* n, char* shelf_name)
 {
@@ -189,56 +188,23 @@ char* fix_shelf_name(tree_root *tree, node* n, char* shelf_name)
     {
       while (!(check_shelf_ans(shelf_name)))
 	{
+	  free(shelf_name);
 	  shelf_name = ask_str_q("Please answer on the format [A23], [A2], [B34]");
 	}
       shelf_name[0] = toupper(shelf_name[0]);
       
       if (n != NULL && shelf_is_taken_list(get_list(n), shelf_name))
 	{
-	  puts("bra val");
 	  return shelf_name;
 	}
       else if (shelf_is_taken(Top(tree), shelf_name))
-	{  
+	{
+	  free(shelf_name);
 	  shelf_name = ask_str_q("That shelf is already taken. Please choose another shelf.");
 	}
-      else break;
-       
+      else break;    
     }
   return shelf_name;
-}
-
-
-
-
-
-
-// --------------------------------------------------------------
-// --------------------------------------------------------------
-// --------------------------------------------------------------
-// --------------------------------------------------------------
-// --------------------------------------------------------------
-
-void strip (char* str)
-{
-  int len = strlen (str);
-  for (int i = 0; i<len; ++i)
-    {
-      if (str[i] == '\n')
-	{
-	  str[i] = '\0';
-	  break;
-	}
-    } 
-  return; //free??
-}
-
-void clear (void)
-{
-  bool newline_found; 
-  do {
-    newline_found = getchar() != '\n';
-  } while (newline_found);
 }
 
 
@@ -258,6 +224,28 @@ bool check_shelf_ans(char* answer)
 }
 
 
+void strip (char* str)
+{
+  int len = strlen (str);
+  for (int i = 0; i<len; ++i)
+    {
+      if (str[i] == '\n')
+	{
+	  str[i] = '\0';
+	  break;
+	}
+    } 
+  return;
+}
+
+void clear (void)
+{
+  bool newline_found; 
+  do {
+    newline_found = getchar() != '\n';
+  } while (newline_found);
+}
+
 
 void print_alt_chars(char* alternatives)
 {
@@ -273,13 +261,9 @@ void print_alt_chars(char* alternatives)
 bool out_of_range(int ok_ans, int low, int high)
 {
   if ((ok_ans < low) || (high < ok_ans))
-    {
       return true;
-    }
   else
-    {
       return false;
-    }
 }
 
 bool only_digits(char* answer)
@@ -296,19 +280,59 @@ bool only_digits(char* answer)
   return true;
 }
 
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+// -----------PRINT FUNCTIONS -----------------------------------
+// --------------------------------------------------------------
+// --------------------------------------------------------------
+
+
 void print_line(void)
 {
   puts("--------------------------------------");
 }
-/* void lower_letter(char* answer, int i)
+
+void print_box(node* node, bool numbers)
 {
-  if (answer[i] == '\0')
+  printf("\n=====\t\t=====\n");
+  if (node == NULL) //|| list_is_empty(node))
     {
-      return; 
+      puts("Item doesn't exists");
     }
   else
     {
-      answer[i] = tolower(answer[i]);
-      lower_letter(answer, i+1);
+      print_name(node, numbers);
+      print_description(node, numbers);
+      print_price(node, numbers);
+      print_shelf_names(node, numbers);
+      print_amount(node, numbers);
     }
-    }*/
+  printf("=====\t\t=====\n\n");
+}
+
+void print_name(node *node, bool number)
+{
+  if (number) printf("1. Name\t\t%s\n", get_key(node));
+  else printf(" Name:\t\t%s\n", get_key(node));
+}
+void print_description(node *node, bool number)
+{
+  if (number) printf("2. Description\t%s\n", get_description(node));
+  else printf(" Description:\t%s\n", get_description(node));
+}	    
+void print_price(node *node, bool number)
+{
+  if (number) printf("3. Price\t%d kr\n", get_price(node));
+  else printf(" Price:\t\t%d kr\n", get_price(node));
+}	  
+void print_shelf_names(node *node, bool number)
+{
+  if (number) printf("4. Shelf\t");
+  else printf(" Shelf:\t\t");
+  shelf_names(get_first(get_list(node)));
+}	   
+void print_amount(node *node, bool number)
+{
+  if (number) printf("5. Amount\t%d\n", get_amount(node));
+  else printf(" Amount:\t%d\n", get_amount(node));
+}
