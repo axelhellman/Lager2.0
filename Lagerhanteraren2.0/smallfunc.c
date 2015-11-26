@@ -1,7 +1,8 @@
 #include "smallfunc.h"
 #include "tree.h"
 #include "list.h"
-
+#define MaxSizeStringInput 256
+#define MaxSizeIntInput 256
 // ----- HIDDEN FUNCTIONS ---------------------------
 void strip(char* str);
 void clear(void);
@@ -68,7 +69,7 @@ int ask_amount()
 
 char* ask_str_q (char *question)
 {
-  char input[256] = "\n";
+  char input[MaxSizeStringInput] = "\n";
   while (input[0] == '\n')
     {
       printf("%s\n> ", question);
@@ -92,7 +93,7 @@ int ask_int_q (char *question, int low, int high)
   
   while (true)
     {
-      char input[128] = "\n";
+      char input[MaxSizeIntInput] = "\n";
       while (input[0] == '\n' || input[0] == ' ' || input[0] == '\0')
 	{
 	  printf("%s\n> ", question);

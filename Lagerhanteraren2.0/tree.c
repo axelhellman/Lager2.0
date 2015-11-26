@@ -83,31 +83,38 @@ char * get_key(node *node)
 {
   return (node -> key);
 }
+
 char * get_ware_name(node *node)
 {
   return (((ware*) node -> n_content) -> name);
 }
+
 char * get_cart_name(node *node)
 {
   return (((cart_item*) node -> n_content) -> name);
 }
+
 char * get_description(node *node)
 {
   return (((ware*) node -> n_content) -> description);
 }
+
 int get_price(node *node) //endast wh
 {
   return (((ware*) node -> n_content) -> price);
 }
+
 void* get_list(node* n) //endast wh
 {
   return (((ware*)n -> n_content) -> list);
 }
+
 int get_cart_amount(node *cart_node)
 {
   cart_item* ci = cart_node -> n_content;
   return(ci -> amount);
 }
+
 int get_cart_price(node* cart_node)
 {
   cart_item* ci = cart_node -> n_content;
@@ -221,7 +228,8 @@ void change_description(node* n, char* new_description)
 {
   char* old_description = get_description(n);
   ((ware*)n -> n_content) -> description = strdup(new_description);
-  //free(new_description);
+
+ 
   free(old_description);
 }
 
@@ -268,13 +276,13 @@ node* find_node(node* node, char* name)
     {
       return find_node(node -> right_node, name);
     }
-  else //(strcmp(name, crnt_node_name) < 0)
+  else
     {
       return find_node(node -> left_node, name);
     }
 }
 
-node* find_prev_node(tree_root* tree, node* n, char* name) //hidden?
+node* find_prev_node(tree_root* tree, node* n, char* name) 
 {
   node* tmp_node = find_node(Top(tree), name);
   if (n == NULL) return NULL;

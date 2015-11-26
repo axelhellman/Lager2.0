@@ -194,7 +194,7 @@ node* remove_amount(node* n, int r_amount)
 	  free(shelf_name);
 	  r_amount = 0;
 	}
-      else // (amount > crnt_amount)
+      else 
 	{
 	  crnt_node = crnt_node -> next_node;
 	  remove_shelf(n, crnt_shelf);
@@ -290,7 +290,7 @@ void destroy_shelf(void* s)
 void destroy_llnode(linked_list_node* ll_node)
 {
   destroy_shelf(ll_node -> ll_content);
-  ll_node -> ll_content = NULL; //är detta onödigt?
+  ll_node -> ll_content = NULL; 
   ll_node -> next_node = NULL;
   free(ll_node);
 }
@@ -340,7 +340,7 @@ void print_check_out_aux(node* n, int amount)
 	  printf("* %s (%d %s)\n", shelf_name, amount, name);
 	  amount = 0;
 	}
-      else // (amount > crnt_amount)
+      else 
 	{
 	  printf("* %s (%d %s)\n", shelf_name, crnt_amount, name);
 	  crnt_node = crnt_node -> next_node;
@@ -419,7 +419,7 @@ void insert_shelf(list *list, shelf *new_shelf)
 	{
 	  puts("something is wrong");
 	}
-      //break;
+     
     }
   return;
 }
